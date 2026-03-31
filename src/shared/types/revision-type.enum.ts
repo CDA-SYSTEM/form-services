@@ -1,0 +1,4 @@
+export enum RevisionType {
+  TECNICO_MECANICA = 'TECNICO_MECANICA',
+  PREVENTIVA = 'PREVENTIVA',
+}
