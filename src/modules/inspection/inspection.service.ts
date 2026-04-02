@@ -11,6 +11,7 @@ import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
+import { FormDomainValidationService } from '../rabbitmq/form-domain-validation.service';
 
 @Injectable()
 export class InspectionService {
@@ -98,7 +99,10 @@ export class InspectionService {
     }
   };
 
-  constructor(private readonly inspectionRepository: InspectionRepository) {}
+  constructor(
+    private readonly inspectionRepository: InspectionRepository,
+    private readonly formDomainValidation: FormDomainValidationService,
+  ) {}
 
   private async generateUniqueInspectionNumber(): Promise<string> {
     for (let attempt = 0; attempt < 10; attempt += 1) {
@@ -118,6 +122,14 @@ export class InspectionService {
   async create(dto: CreateInspectionDto): Promise<InspectionResponseDto> {
     this.validateTiresForVehicleType(dto.vehicle_type, dto.tires.length);
     this.validateChecklistByVehicleType(dto.vehicle_type, dto.checklist);
+
+    const clientIdForValidation =
+      dto.client_id?.trim() || dto.customer_id?.trim();
+
+    await this.formDomainValidation.assertClientAndVehicleExist(
+      clientIdForValidation,
+      dto.vehicle_id,
+    );
 
     const payload = InspectionMapper.toEntity(dto);
     payload.inspection_number =

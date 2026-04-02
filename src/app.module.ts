@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { InspectionModule } from './modules/inspection/inspection.module';
+import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
 
 @Module({
   imports: [
@@ -14,6 +15,14 @@ import { InspectionModule } from './modules/inspection/inspection.module';
         PORT: Joi.number().default(7500),
         API_KEY: Joi.string().required(),
         SIGNATURE_BUCKET_NAME: Joi.string().optional(),
+        RABBITMQ_URI: Joi.string().allow('').optional(),
+        RABBITMQ_QUEUE_USER: Joi.string().allow('').optional(),
+        RABBITMQ_PASSWORD: Joi.string().allow('').optional(),
+        RABBITMQ_HOST: Joi.string().default('localhost'),
+        RABBITMQ_PORT: Joi.number().default(5672),
+        RABBITMQ_CLIENT_QUEUE: Joi.string().default('client-service-queue'),
+        RABBITMQ_VEHICLE_QUEUE: Joi.string().default('vehicle-service-queue'),
+        RABBITMQ_RPC_TIMEOUT_MS: Joi.number().default(8000),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -26,6 +35,7 @@ import { InspectionModule } from './modules/inspection/inspection.module';
         synchronize: true,
       }),
     }),
+    RabbitMQModule,
     InspectionModule,
   ],
   controllers: [AppController],

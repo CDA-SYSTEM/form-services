@@ -39,7 +39,7 @@ export class InspectionController {
   @ApiOperation({
     summary: 'Crear una inspeccion',
     description:
-      'Si se envia vehicle_type: MOTOCICLETA exige 2 llantas y solo checklist.is_clean obligatorio; VEHICULO_LIVIANO exige 4 llantas + checklist completo; VEHICULO_PESADO permite de 1 a 12 llantas + checklist completo.',
+      'Si RabbitMQ esta configurado (RABBITMQ_URI o usuario/contrasena), antes de guardar se valida en paralelo que existan customer_id (cliente) y vehicle_id (vehiculo) via RPC a las colas RABBITMQ_CLIENT_QUEUE y RABBITMQ_VEHICLE_QUEUE. Si falla la validacion o el RPC, no se persiste. Reglas de vehicle_type: MOTOCICLETA 2 llantas + solo is_clean; VEHICULO_LIVIANO 4 llantas + checklist completo; VEHICULO_PESADO hasta 12 llantas + checklist completo.',
   })
   @ApiOkResponse({ type: InspectionResponseDto })
   @Post()
