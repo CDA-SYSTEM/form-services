@@ -26,7 +26,7 @@ jobs:
           script: |
             cd ~/Documentos/cda/services/form-services
             git pull origin develop
-            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm install
             npm run build
             # Si usas pm2 para que no se apague:
             pm2 restart form-service  || pm2 start dist/main.js --name form-service 
