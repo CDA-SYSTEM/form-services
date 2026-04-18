@@ -12,6 +12,7 @@ import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
 import { FormDomainValidationService } from '../rabbitmq/form-domain-validation.service';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class InspectionService {
@@ -21,7 +22,6 @@ export class InspectionService {
   private readonly normalizeTirePressure = (pressure: number): number =>
     Number(pressure.toFixed(2));
 
-  private readonly normalizeDate = (date: string): Date => new Date(date);
   private readonly normalizeIdentity = (value: string): string =>
     value
       .split('-')
@@ -32,9 +32,14 @@ export class InspectionService {
     const now = new Date();
     const pad = (value: number): string => value.toString().padStart(2, '0');
     const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    const suffix = Math.random().toString(36).toUpperCase().slice(2, 6);
+    const suffix = nanoid(6).toUpperCase();
     return `INSP-${stamp}-${suffix}`;
   };
+
+  private readonly isMotorcycle = (vehicleType: VehicleType): boolean =>
+    vehicleType === VehicleType.MOTOCICLETA_2_TIEMPOS ||
+    vehicleType === VehicleType.MOTOCICLETA_4_TIEMPOS;
+
   private readonly validateTiresForVehicleType = (
     vehicleType: VehicleType | undefined,
     tiresCount: number,
@@ -47,9 +52,16 @@ export class InspectionService {
       VehicleType,
       { exact?: number; max?: number; label: string }
     > = {
-      [VehicleType.MOTOCICLETA]: { exact: 2, label: 'motocicleta' },
-      [VehicleType.VEHICULO_LIVIANO]: { exact: 4, label: 'vehiculo liviano' },
-      [VehicleType.VEHICULO_PESADO]: { max: 12, label: 'vehiculo pesado' },
+      [VehicleType.MOTOCICLETA_2_TIEMPOS]: {
+        exact: 2,
+        label: 'motocicleta 2 tiempos',
+      },
+      [VehicleType.MOTOCICLETA_4_TIEMPOS]: {
+        exact: 2,
+        label: 'motocicleta 4 tiempos',
+      },
+      [VehicleType.LIVIANO]: { exact: 4, label: 'vehiculo liviano' },
+      [VehicleType.PESADO]: { max: 12, label: 'vehiculo pesado' },
     };
 
     const rule = rules[vehicleType];
@@ -76,7 +88,7 @@ export class InspectionService {
       throw new BadRequestException('checklist.is_clean es obligatorio');
     }
 
-    if (vehicleType === VehicleType.MOTOCICLETA) {
+    if (this.isMotorcycle(vehicleType)) {
       return;
     }
 
@@ -133,14 +145,16 @@ export class InspectionService {
 
     const payload = InspectionMapper.toEntity(dto);
     payload.inspection_number =
-      dto.inspection_number?.trim() || (await this.generateUniqueInspectionNumber());
-    payload.date = this.normalizeDate(dto.date);
-    payload.inspection_date = this.normalizeDate(dto.inspection_date);
+      (await this.generateUniqueInspectionNumber());
+    const now = new Date();
+    payload.date = now;
+    payload.inspection_date = now;
     payload.client_id = this.normalizeIdentity(dto.client_id);
     payload.operator_id = this.normalizeIdentity(dto.operator_id);
     payload.responsible_id = this.normalizeIdentity(dto.responsible_id);
     payload.observations = dto.observations?.trim() ?? '';
     payload.signature_url = dto.signature_url?.trim() ?? '';
+    payload.fuel_certificate_number = dto.fuel_certificate_number?.trim() ?? '';
     payload.tires = dto.tires.map((tire) => ({
       ...tire,
       code: this.normalizeTireCode(tire.code),
@@ -190,27 +204,9 @@ export class InspectionService {
       dto.vehicle_type ?? current.vehicle_type,
       dto.checklist ?? current.checklist,
     );
-    if (
-      dto.inspection_number &&
-      dto.inspection_number.trim() !== current.inspection_number
-    ) {
-      const exists = await this.inspectionRepository.existsByInspectionNumber(
-        dto.inspection_number.trim(),
-      );
-      if (exists) {
-        throw new BadRequestException(
-          `El numero de inspeccion "${dto.inspection_number.trim()}" ya existe`,
-        );
-      }
-    }
 
     const partialPayload = {
       ...dto,
-      inspection_number: dto.inspection_number?.trim(),
-      date: dto.date ? this.normalizeDate(dto.date) : undefined,
-      inspection_date: dto.inspection_date
-        ? this.normalizeDate(dto.inspection_date)
-        : undefined,
       client_id: dto.client_id
         ? this.normalizeIdentity(dto.client_id)
         : undefined,
@@ -222,6 +218,7 @@ export class InspectionService {
         : undefined,
       observations: dto.observations?.trim(),
       signature_url: dto.signature_url?.trim(),
+      fuel_certificate_number: dto.fuel_certificate_number?.trim(),
       tires: dto.tires?.map((tire) => ({
         ...tire,
         code: this.normalizeTireCode(tire.code),

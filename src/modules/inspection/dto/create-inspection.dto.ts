@@ -20,6 +20,8 @@ import { CustomerType } from '../../../shared/types/customer-type.enum';
 import { RevisionType } from '../../../shared/types/revision-type.enum';
 import { TernaryChoice } from '../../../shared/types/ternary-choice.enum';
 import { TirePosition } from '../../../shared/types/tire-position.enum';
+import { FuelType } from '../../../shared/types/fuel-type.enum';
+import { ServiceType } from '../../../shared/types/service-type.enum';
 import { VehicleType } from '../../../shared/types/vehicle-type.enum';
 
 export class ChecklistDto {
@@ -119,28 +121,12 @@ export class TireDto {
 }
 
 export class CreateInspectionDto {
-  @ApiPropertyOptional({
-    description:
-      'Numero de inspeccion. Si no se envia, el sistema lo genera automaticamente con formato unico.',
-    example: 'INSP-20260331-163455-AB12',
-  })
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  inspection_number?: string;
+  // inspection_number/date/inspection_date se generan automaticamente en el backend
 
   @ApiProperty()
   @IsNumber()
   @Min(0)
   mileage: number;
-
-  @ApiProperty()
-  @IsDateString()
-  date: string;
-
-  @ApiProperty()
-  @IsDateString()
-  inspection_date: string;
 
   @ApiProperty()
   @IsString()
@@ -155,11 +141,37 @@ export class CreateInspectionDto {
   @ApiPropertyOptional({
     enum: VehicleType,
     description:
-      'Opcional. Si se envia: MOTOCICLETA exige 2 llantas, VEHICULO_LIVIANO exige 4, VEHICULO_PESADO permite hasta 12.',
+      'Opcional. Si se envia: MOTOCICLETA (2T/4T) exige 2 llantas, LIVIANO exige 4, PESADO permite hasta 12.',
   })
   @IsOptional()
   @IsEnum(VehicleType)
   vehicle_type?: VehicleType;
+
+  @ApiPropertyOptional({
+    enum: FuelType,
+    description: 'Tipo de combustible.',
+  })
+  @IsOptional()
+  @IsEnum(FuelType)
+  fuel_type?: FuelType;
+
+  @ApiPropertyOptional({
+    description:
+      'Numero de certificado. Recomendado si fuel_type es GAS o GAS_GASOLINA.',
+    example: 'CERT-12345',
+  })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  fuel_certificate_number?: string;
+
+  @ApiPropertyOptional({
+    enum: ServiceType,
+    description: 'Tipo de servicio.',
+  })
+  @IsOptional()
+  @IsEnum(ServiceType)
+  service_type?: ServiceType;
 
   @ApiProperty()
   @IsString()

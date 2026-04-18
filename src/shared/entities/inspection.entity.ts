@@ -2,7 +2,9 @@ import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { BrakeFluidSightGlass } from '../types/brake-fluid-sight-glass.enum';
 import { CustomerType } from '../types/customer-type.enum';
+import { FuelType } from '../types/fuel-type.enum';
 import { RevisionType } from '../types/revision-type.enum';
+import { ServiceType } from '../types/service-type.enum';
 import { TernaryChoice } from '../types/ternary-choice.enum';
 import { TirePosition } from '../types/tire-position.enum';
 import { VehicleType } from '../types/vehicle-type.enum';
@@ -71,6 +73,15 @@ export class Inspection {
 
   @Column({ nullable: true })
   vehicle_type?: VehicleType;
+
+  @Column({ nullable: true })
+  fuel_type?: FuelType;
+
+  @Column({ nullable: true })
+  fuel_certificate_number?: string;
+
+  @Column({ nullable: true })
+  service_type?: ServiceType;
 
   @Column()
   operator_id: string;

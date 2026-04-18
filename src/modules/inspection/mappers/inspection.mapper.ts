@@ -4,10 +4,11 @@ import { Inspection } from '../../../shared/entities/inspection.entity';
 
 export class InspectionMapper {
   static toEntity(dto: CreateInspectionDto): Partial<Inspection> {
+    const now = new Date();
     return {
       ...dto,
-      date: new Date(dto.date),
-      inspection_date: new Date(dto.inspection_date),
+      date: now,
+      inspection_date: now,
       deletedAt: null,
     };
   }
@@ -24,6 +25,9 @@ export class InspectionMapper {
       client_id: entity.client_id,
       vehicle_id: entity.vehicle_id,
       vehicle_type: entity.vehicle_type,
+      fuel_type: entity.fuel_type,
+      fuel_certificate_number: entity.fuel_certificate_number,
+      service_type: entity.service_type,
       operator_id: entity.operator_id,
       responsible_id: entity.responsible_id,
       customer_id: entity.customer_id,

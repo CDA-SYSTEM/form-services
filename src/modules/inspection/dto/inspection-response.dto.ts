@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BrakeFluidSightGlass } from '../../../shared/types/brake-fluid-sight-glass.enum';
 import { CustomerType } from '../../../shared/types/customer-type.enum';
+import { FuelType } from '../../../shared/types/fuel-type.enum';
 import { RevisionType } from '../../../shared/types/revision-type.enum';
+import { ServiceType } from '../../../shared/types/service-type.enum';
 import { TernaryChoice } from '../../../shared/types/ternary-choice.enum';
 import { TirePosition } from '../../../shared/types/tire-position.enum';
 import { VehicleType } from '../../../shared/types/vehicle-type.enum';
@@ -54,6 +56,12 @@ export class InspectionResponseDto {
   vehicle_id: string;
   @ApiPropertyOptional({ enum: VehicleType })
   vehicle_type?: VehicleType;
+  @ApiPropertyOptional({ enum: FuelType })
+  fuel_type?: FuelType;
+  @ApiPropertyOptional()
+  fuel_certificate_number?: string;
+  @ApiPropertyOptional({ enum: ServiceType })
+  service_type?: ServiceType;
   @ApiProperty()
   operator_id: string;
   @ApiProperty()

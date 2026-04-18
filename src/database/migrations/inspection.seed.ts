@@ -4,6 +4,8 @@ import { InspectionService } from '../../modules/inspection/inspection.service';
 import { BrakeFluidSightGlass } from '../../shared/types/brake-fluid-sight-glass.enum';
 import { CustomerType } from '../../shared/types/customer-type.enum';
 import { RevisionType } from '../../shared/types/revision-type.enum';
+import { FuelType } from '../../shared/types/fuel-type.enum';
+import { ServiceType } from '../../shared/types/service-type.enum';
 import { TernaryChoice } from '../../shared/types/ternary-choice.enum';
 import { TirePosition } from '../../shared/types/tire-position.enum';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
@@ -19,13 +21,12 @@ async function bootstrap() {
   }
 
   await inspectionService.create({
-    inspection_number: 'INSP-2026-0001',
     mileage: 125000,
-    date: new Date().toISOString(),
-    inspection_date: new Date().toISOString(),
     client_id: '1234567890 - Carlos Perez',
     vehicle_id: 'ABC123',
-    vehicle_type: VehicleType.VEHICULO_LIVIANO,
+    vehicle_type: VehicleType.LIVIANO,
+    fuel_type: FuelType.DIESEL,
+    service_type: ServiceType.PUBLICO,
     operator_id: '9876543210 - Laura Ruiz',
     responsible_id: '1122334455 - Andres Salazar',
     customer_id: 'CUST-001',
