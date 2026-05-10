@@ -215,7 +215,6 @@ export class CreateInspectionDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUrl()
   signature_url?: string;
 
   @ApiProperty()
