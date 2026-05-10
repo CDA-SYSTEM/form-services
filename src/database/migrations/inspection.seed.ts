@@ -15,7 +15,7 @@ async function bootstrap() {
   const inspectionService = app.get(InspectionService);
 
   const current = await inspectionService.findAll();
-  if (current.length > 0) {
+  if (current.data.length > 0) {
     await app.close();
     return;
   }
