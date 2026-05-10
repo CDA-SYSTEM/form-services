@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
+import { CatalogsModule } from './modules/catalogs/catalogs.module';
 import { InspectionModule } from './modules/inspection/inspection.module';
 import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
 
@@ -35,6 +36,7 @@ import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
         synchronize: true,
       }),
     }),
+    CatalogsModule,
     RabbitMQModule,
     InspectionModule,
   ],
