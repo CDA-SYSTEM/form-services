@@ -64,7 +64,8 @@ export class InspectionRepository {
   async findAll(
     includeDeleted = false,
     filters?: InspectionFilters,
-  ): Promise<Inspection[]> {
+    pagination?: { skip: number; take: number },
+  ): Promise<{ data: Inspection[]; total: number }> {
     const baseWhere: Record<string, unknown> = {};
     if (!includeDeleted) {
       baseWhere.deletedAt = null;
@@ -76,12 +77,22 @@ export class InspectionRepository {
       baseWhere.vehicle_id = filters.vehicle_id;
     }
 
-    const documents = await this.repository
-      .createCursor(baseWhere as any)
-      .sort({ inspection_date: -1 })
-      .toArray();
+    const total = await this.repository.countDocuments(baseWhere as any);
 
-    return documents.map(this.normalizeDocument);
+    let cursor = this.repository
+      .createCursor(baseWhere as any)
+      .sort({ inspection_date: -1 });
+
+    if (pagination) {
+      cursor = cursor.skip(pagination.skip).limit(pagination.take);
+    }
+
+    const documents = await cursor.toArray();
+
+    return {
+      data: documents.map(this.normalizeDocument),
+      total,
+    };
   }
 
   async findById(id: string): Promise<Inspection | null> {
