@@ -7,6 +7,7 @@ import {
 import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
+import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
@@ -167,15 +168,31 @@ export class InspectionService {
 
   async findAll(
     query: ListInspectionsQueryDto = {},
-  ): Promise<InspectionResponseDto[]> {
-    const inspections = await this.inspectionRepository.findAll(
-      query.includeDeleted === 'true',
+  ): Promise<PaginatedInspectionResponseDto> {
+    const { page, size, ...filters } = query;
+
+    const pagination =
+      page !== undefined && size !== undefined
+        ? { skip: (page - 1) * size, take: size }
+        : undefined;
+
+    const result = await this.inspectionRepository.findAll(
+      filters.includeDeleted === 'true',
       {
-        inspection_number: query.inspection_number?.trim(),
-        vehicle_id: query.vehicle_id?.trim(),
+        inspection_number: filters.inspection_number?.trim(),
+        vehicle_id: filters.vehicle_id?.trim(),
       },
+      pagination,
     );
-    return inspections.map(InspectionMapper.toResponseDto);
+
+    const data = result.data.map(InspectionMapper.toResponseDto);
+
+    return new PaginatedInspectionResponseDto({
+      data,
+      total: result.total,
+      page: page ?? 1,
+      size: size ?? result.total,
+    });
   }
 
   async findOne(id: string): Promise<InspectionResponseDto> {
