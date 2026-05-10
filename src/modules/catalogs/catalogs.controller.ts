@@ -7,6 +7,7 @@ import { TirePosition } from '../../shared/types/tire-position.enum';
 import { TernaryChoice } from '../../shared/types/ternary-choice.enum';
 import { RevisionType } from '../../shared/types/revision-type.enum';
 import { CustomerType } from '../../shared/types/customer-type.enum';
+import { BrakeFluidSightGlass } from '../../shared/types/brake-fluid-sight-glass.enum';
 
 @ApiTags('catalogs')
 @Controller('catalogs')
@@ -51,5 +52,11 @@ export class CatalogsController {
   @ApiOperation({ summary: 'Obtener tipos de cliente' })
   getCustomerTypes(): string[] {
     return Object.values(CustomerType);
+  }
+
+  @Get('brake-fluid-sight-glass')
+  @ApiOperation({ summary: 'Obtener estados del visor de liquido de frenos' })
+  getBrakeFluidSightGlass(): string[] {
+    return Object.values(BrakeFluidSightGlass);
   }
 }
