@@ -18,6 +18,7 @@ import {
 import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
+import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { CreateInspectionUseCase } from './use-cases/create-inspection.use-case';
 import { FindAllInspectionsUseCase } from './use-cases/find-all-inspections.use-case';
@@ -47,13 +48,29 @@ export class InspectionController {
     return this.createInspectionUseCase.execute(dto);
   }
 
-  @ApiOperation({ summary: 'Listar inspecciones con filtros opcionales' })
+  @ApiOperation({
+    summary: 'Listar inspecciones con filtros opcionales y paginacion',
+  })
   @ApiQuery({ name: 'includeDeleted', required: false, type: String })
   @ApiQuery({ name: 'inspection_number', required: false, type: String })
   @ApiQuery({ name: 'vehicle_id', required: false, type: String })
-  @ApiOkResponse({ type: InspectionResponseDto, isArray: true })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Numero de pagina (empieza en 1)',
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    type: Number,
+    description: 'Elementos por pagina',
+  })
+  @ApiOkResponse({ type: PaginatedInspectionResponseDto })
   @Get()
-  findAll(@Query() query: ListInspectionsQueryDto): Promise<InspectionResponseDto[]> {
+  findAll(
+    @Query() query: ListInspectionsQueryDto,
+  ): Promise<PaginatedInspectionResponseDto> {
     return this.findAllInspectionsUseCase.execute(query);
   }
 
