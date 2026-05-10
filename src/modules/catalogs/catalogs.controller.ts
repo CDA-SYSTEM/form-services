@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
 import { ServiceType } from '../../shared/types/service-type.enum';
+import { FuelType } from '../../shared/types/fuel-type.enum';
 
 @ApiTags('catalogs')
 @Controller('catalogs')
@@ -16,5 +17,11 @@ export class CatalogsController {
   @ApiOperation({ summary: 'Obtener tipos de servicio' })
   getServiceTypes(): string[] {
     return Object.values(ServiceType);
+  }
+
+  @Get('fuel-types')
+  @ApiOperation({ summary: 'Obtener tipos de combustible' })
+  getFuelTypes(): string[] {
+    return Object.values(FuelType);
   }
 }
