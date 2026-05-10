@@ -218,7 +218,6 @@ export class CreateInspectionDto {
   signature_url?: string;
 
   @ApiProperty()
-  @IsUrl()
   photo_reception_url: string;
 
   @ApiProperty({ type: ChecklistDto })
