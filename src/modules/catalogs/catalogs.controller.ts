@@ -6,6 +6,7 @@ import { FuelType } from '../../shared/types/fuel-type.enum';
 import { TirePosition } from '../../shared/types/tire-position.enum';
 import { TernaryChoice } from '../../shared/types/ternary-choice.enum';
 import { RevisionType } from '../../shared/types/revision-type.enum';
+import { CustomerType } from '../../shared/types/customer-type.enum';
 
 @ApiTags('catalogs')
 @Controller('catalogs')
@@ -44,5 +45,11 @@ export class CatalogsController {
   @ApiOperation({ summary: 'Obtener tipos de revision' })
   getRevisionTypes(): string[] {
     return Object.values(RevisionType);
+  }
+
+  @Get('customer-types')
+  @ApiOperation({ summary: 'Obtener tipos de cliente' })
+  getCustomerTypes(): string[] {
+    return Object.values(CustomerType);
   }
 }
