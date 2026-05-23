@@ -116,6 +116,9 @@ export class Inspection {
   @Column()
   photo_reception_url: string;
 
+  @Column({ nullable: true })
+  checklistId?: string;
+
   @Column(() => Checklist)
   checklist: Checklist;
 

@@ -8,6 +8,7 @@ import { CreateInspectionDto } from './dto/create-inspection.dto';
 import { InspectionResponseDto } from './dto/inspection-response.dto';
 import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
 import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
+import { UpdateChecklistIdDto } from './dto/update-checklist-id.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
@@ -249,6 +250,22 @@ export class InspectionService {
     }
 
     return InspectionMapper.toResponseDto(updated);
+  }
+
+  async updateChecklistId(
+    id: string,
+    dto: UpdateChecklistIdDto,
+  ): Promise<{ success: boolean }> {
+    const current = await this.inspectionRepository.findById(id);
+    if (!current || current.deletedAt) {
+      throw new NotFoundException(`Inspection with id "${id}" not found`);
+    }
+
+    await this.inspectionRepository.updateById(id, {
+      checklistId: dto.checklistId,
+    });
+
+    return { success: true };
   }
 
   async remove(id: string): Promise<{ deleted: boolean }> {

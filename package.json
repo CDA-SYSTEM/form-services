@@ -33,6 +33,7 @@
     "amqplib": "^0.10.8",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "express-basic-auth": "^1.2.1",
     "joi": "^17.13.3",
     "mongodb": "^6.16.0",
     "nanoid": "^5.1.9",
