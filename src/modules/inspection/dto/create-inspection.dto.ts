@@ -217,6 +217,11 @@ export class CreateInspectionDto {
   @IsOptional()
   signature_url?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  checklistId?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

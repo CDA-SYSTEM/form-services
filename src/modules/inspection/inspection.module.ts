@@ -8,6 +8,7 @@ import { CreateInspectionUseCase } from './use-cases/create-inspection.use-case'
 import { FindAllInspectionsUseCase } from './use-cases/find-all-inspections.use-case';
 import { FindOneInspectionUseCase } from './use-cases/find-one-inspection.use-case';
 import { RemoveInspectionUseCase } from './use-cases/remove-inspection.use-case';
+import { UpdateChecklistIdUseCase } from './use-cases/update-checklist-id.use-case';
 import { UpdateInspectionUseCase } from './use-cases/update-inspection.use-case';
 
 @Module({
@@ -20,6 +21,7 @@ import { UpdateInspectionUseCase } from './use-cases/update-inspection.use-case'
     FindAllInspectionsUseCase,
     FindOneInspectionUseCase,
     UpdateInspectionUseCase,
+    UpdateChecklistIdUseCase,
     RemoveInspectionUseCase,
   ],
   exports: [InspectionService, InspectionRepository],
