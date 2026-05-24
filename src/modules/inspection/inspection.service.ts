@@ -226,13 +226,13 @@ export class InspectionService {
     const partialPayload = {
       ...dto,
       client_id: dto.client_id
-        ? this.normalizeIdentity(dto.client_id)
+        ? dto.client_id.trim()
         : undefined,
       operator_id: dto.operator_id
-        ? this.normalizeIdentity(dto.operator_id)
+        ? dto.operator_id.trim()
         : undefined,
       responsible_id: dto.responsible_id
-        ? this.normalizeIdentity(dto.responsible_id)
+        ? dto.responsible_id.trim()
         : undefined,
       observations: dto.observations?.trim(),
       signature_url: dto.signature_url?.trim(),
