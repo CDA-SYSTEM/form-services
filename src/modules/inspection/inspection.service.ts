@@ -151,9 +151,9 @@ export class InspectionService {
     const now = new Date();
     payload.date = now;
     payload.inspection_date = now;
-    payload.client_id = this.normalizeIdentity(dto.client_id);
-    payload.operator_id = this.normalizeIdentity(dto.operator_id);
-    payload.responsible_id = this.normalizeIdentity(dto.responsible_id);
+    payload.client_id = dto.client_id.trim();
+    payload.operator_id = dto.operator_id.trim();
+    payload.responsible_id = dto.responsible_id.trim();
     payload.observations = dto.observations?.trim() ?? '';
     payload.signature_url = dto.signature_url?.trim() ?? '';
     payload.fuel_certificate_number = dto.fuel_certificate_number?.trim() ?? '';
