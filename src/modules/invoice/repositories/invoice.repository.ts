@@ -7,6 +7,7 @@ import { Invoice } from '../../../shared/entities/invoice.entity';
 type InvoiceFilters = {
   invoice_number?: string;
   statusId?: string;
+  inspection_id?: string;
 };
 
 @Injectable()
@@ -36,6 +37,9 @@ export class InvoiceRepository {
     }
     if (filters?.statusId) {
       baseWhere.statusId = filters.statusId;
+    }
+    if (filters?.inspection_id) {
+      baseWhere.inspection_id = filters.inspection_id;
     }
 
     const total = await this.repository.countDocuments(baseWhere as any);

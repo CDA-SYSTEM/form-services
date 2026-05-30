@@ -24,6 +24,11 @@ export class ListInvoicesQueryDto {
   @IsString()
   statusId?: string;
 
+  @ApiPropertyOptional({ description: 'Filtrar por ID de inspeccion' })
+  @IsOptional()
+  @IsString()
+  inspection_id?: string;
+
   @ApiPropertyOptional({ description: 'Numero de pagina (empieza en 1)' })
   @IsOptional()
   @Type(() => Number)
