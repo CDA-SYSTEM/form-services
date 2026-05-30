@@ -152,7 +152,8 @@ export class InspectionService {
     payload.inspection_number =
       (await this.generateUniqueInspectionNumber());
 
-    const [pending] = await this.statusRepository.findAll(false, { code: 'PENDING' });
+    const pendingResult = await this.statusRepository.findAll(false, { code: 'PENDING' });
+    const pending = pendingResult.data[0];
     payload.statusId = pending?._id.toString();
 
     const now = new Date();
