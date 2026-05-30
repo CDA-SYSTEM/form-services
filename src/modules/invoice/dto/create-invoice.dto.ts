@@ -75,10 +75,10 @@ export class CreateInvoiceDto {
   @IsNotEmpty()
   statusId: string;
 
-  @ApiPropertyOptional({ description: 'ID de la inspeccion relacionada' })
-  @IsOptional()
+  @ApiProperty({ description: 'ID de la inspeccion relacionada' })
   @IsString()
-  inspection_id?: string;
+  @IsNotEmpty()
+  inspection_id: string;
 
   @ApiPropertyOptional({ description: 'Observaciones' })
   @IsOptional()

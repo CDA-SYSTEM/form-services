@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceResponseDto } from './dto/invoice-response.dto';
@@ -10,11 +11,15 @@ import { PaginatedInvoiceResponseDto } from './dto/paginated-invoice-response.dt
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceMapper } from './mappers/invoice.mapper';
 import { InvoiceRepository } from './repositories/invoice.repository';
+import { InspectionRepository } from '../inspection/repositories/inspection.repository';
 import { nanoid } from 'nanoid';
 
 @Injectable()
 export class InvoiceService {
-  constructor(private readonly invoiceRepository: InvoiceRepository) {}
+  constructor(
+    private readonly invoiceRepository: InvoiceRepository,
+    private readonly inspectionRepository: InspectionRepository,
+  ) {}
 
   private buildInvoiceNumber = (): string => {
     const now = new Date();
@@ -52,7 +57,18 @@ export class InvoiceService {
     return { subtotal, tax, total };
   };
 
+  private assertInspectionExists = async (id: string): Promise<void> => {
+    const inspection = await this.inspectionRepository.findById(id);
+    if (!inspection || inspection.deletedAt) {
+      throw new BadRequestException(
+        `La inspeccion con id "${id}" no existe`,
+      );
+    }
+  };
+
   create = async (dto: CreateInvoiceDto): Promise<InvoiceResponseDto> => {
+    await this.assertInspectionExists(dto.inspection_id);
+
     const payload = InvoiceMapper.toEntity(dto);
     payload.invoice_number = await this.generateUniqueInvoiceNumber();
 
@@ -118,6 +134,10 @@ export class InvoiceService {
     const current = await this.invoiceRepository.findById(id);
     if (!current || current.deletedAt) {
       throw new NotFoundException(`Invoice with id "${id}" not found`);
+    }
+
+    if (dto.inspection_id) {
+      await this.assertInspectionExists(dto.inspection_id);
     }
 
     const partialPayload: any = {

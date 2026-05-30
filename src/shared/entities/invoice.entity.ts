@@ -58,8 +58,8 @@ export class Invoice {
   @Column()
   statusId: string;
 
-  @Column({ nullable: true })
-  inspection_id?: string;
+  @Column()
+  inspection_id: string;
 
   @Column({ nullable: true })
   observations?: string;
