@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /build
+/docs
 
 # Logs
 logs
@@ -45,6 +46,9 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# internal docs (no trackeado por git)
+/inter-docs
 
 # Runtime data
 pids

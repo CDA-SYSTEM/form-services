@@ -5,7 +5,11 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { CatalogsModule } from './modules/catalogs/catalogs.module';
 import { InspectionModule } from './modules/inspection/inspection.module';
+import { InvoiceModule } from './modules/invoice/invoice.module';
+import { PriceModule } from './modules/price/price.module';
 import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
+import { SocketModule } from './modules/socket/socket.module';
+import { StatusModule } from './modules/status/status.module';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
     CatalogsModule,
     RabbitMQModule,
     InspectionModule,
+    StatusModule,
+    PriceModule,
+    InvoiceModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [],

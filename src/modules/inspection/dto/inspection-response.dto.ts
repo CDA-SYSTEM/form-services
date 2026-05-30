@@ -85,6 +85,12 @@ export class InspectionResponseDto {
   @ApiProperty()
   photo_reception_url: string;
   @ApiPropertyOptional()
+  statusId?: string;
+
+  @ApiPropertyOptional()
+  statusName?: string;
+
+  @ApiPropertyOptional()
   checklistId?: string;
   @ApiProperty({ type: ChecklistResponseDto })
   checklist: ChecklistResponseDto;

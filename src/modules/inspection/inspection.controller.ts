@@ -21,12 +21,14 @@ import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
 import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
 import { UpdateChecklistIdDto } from './dto/update-checklist-id.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
+import { UpdateInspectionStatusDto } from './dto/update-inspection-status.dto';
 import { CreateInspectionUseCase } from './use-cases/create-inspection.use-case';
 import { FindAllInspectionsUseCase } from './use-cases/find-all-inspections.use-case';
 import { FindOneInspectionUseCase } from './use-cases/find-one-inspection.use-case';
 import { RemoveInspectionUseCase } from './use-cases/remove-inspection.use-case';
 import { UpdateChecklistIdUseCase } from './use-cases/update-checklist-id.use-case';
 import { UpdateInspectionUseCase } from './use-cases/update-inspection.use-case';
+import { UpdateInspectionStatusUseCase } from './use-cases/update-inspection-status.use-case';
 
 @ApiTags('inspections')
 @Controller('inspections')
@@ -38,6 +40,7 @@ export class InspectionController {
     private readonly updateInspectionUseCase: UpdateInspectionUseCase,
     private readonly removeInspectionUseCase: RemoveInspectionUseCase,
     private readonly updateChecklistIdUseCase: UpdateChecklistIdUseCase,
+    private readonly updateInspectionStatusUseCase: UpdateInspectionStatusUseCase,
   ) {}
 
   @ApiOperation({
@@ -117,6 +120,25 @@ export class InspectionController {
     @Body() dto: UpdateChecklistIdDto,
   ): Promise<{ success: boolean }> {
     return this.updateChecklistIdUseCase.execute(id, dto);
+  }
+
+  @ApiOperation({
+    summary: 'Actualizar solo el estado de una inspeccion',
+    description:
+      'Endpoint dedicado exclusivamente a cambiar el statusId de una inspeccion existente. Valida que el estado exista y este activo.',
+  })
+  @ApiParam({ name: 'id', type: String })
+  @ApiOkResponse({
+    schema: {
+      example: { success: true },
+    },
+  })
+  @Patch(':id/status')
+  updateInspectionStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateInspectionStatusDto,
+  ): Promise<{ success: boolean }> {
+    return this.updateInspectionStatusUseCase.execute(id, dto);
   }
 
   @ApiOperation({ summary: 'Eliminar (soft delete) inspeccion por id' })

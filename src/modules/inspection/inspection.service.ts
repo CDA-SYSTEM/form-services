@@ -10,8 +10,11 @@ import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
 import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
 import { UpdateChecklistIdDto } from './dto/update-checklist-id.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
+import { UpdateInspectionStatusDto } from './dto/update-inspection-status.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
+import { StatusRepository } from '../status/repositories/status.repository';
+import { SocketGateway } from '../socket/socket.gateway';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
 import { FormDomainValidationService } from '../rabbitmq/form-domain-validation.service';
 import { nanoid } from 'nanoid';
@@ -116,6 +119,8 @@ export class InspectionService {
   constructor(
     private readonly inspectionRepository: InspectionRepository,
     private readonly formDomainValidation: FormDomainValidationService,
+    private readonly statusRepository: StatusRepository,
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   private async generateUniqueInspectionNumber(): Promise<string> {
@@ -148,6 +153,11 @@ export class InspectionService {
     const payload = InspectionMapper.toEntity(dto);
     payload.inspection_number =
       (await this.generateUniqueInspectionNumber());
+
+    const pendingResult = await this.statusRepository.findAll(false, { code: 'PENDING' });
+    const pending = pendingResult.data[0];
+    payload.statusId = pending?._id.toString();
+
     const now = new Date();
     payload.date = now;
     payload.inspection_date = now;
@@ -164,7 +174,9 @@ export class InspectionService {
     }));
 
     const created = await this.inspectionRepository.create(payload);
-    return InspectionMapper.toResponseDto(created);
+    const createDto = InspectionMapper.toResponseDto(created);
+    createDto.statusName = await this.resolveStatusName(createDto.statusId);
+    return createDto;
   }
 
   async findAll(
@@ -188,6 +200,15 @@ export class InspectionService {
 
     const data = result.data.map(InspectionMapper.toResponseDto);
 
+    const statusIds = [...new Set(data.map(d => d.statusId).filter(Boolean))];
+    if (statusIds.length > 0) {
+      const statuses = await this.statusRepository.findAll(false, {});
+      const statusMap = new Map(statuses.data.map(s => [s._id.toString(), s.name]));
+      for (const dto of data) {
+        if (dto.statusId) dto.statusName = statusMap.get(dto.statusId) ?? '';
+      }
+    }
+
     return new PaginatedInspectionResponseDto({
       data,
       total: result.total,
@@ -196,13 +217,22 @@ export class InspectionService {
     });
   }
 
+  private async resolveStatusName(statusId?: string): Promise<string | undefined> {
+    if (!statusId) return undefined;
+    const statuses = await this.statusRepository.findAll(false, {});
+    const status = statuses.data.find(s => s._id.toString() === statusId);
+    return status?.name;
+  }
+
   async findOne(id: string): Promise<InspectionResponseDto> {
     const inspection = await this.inspectionRepository.findById(id);
     if (!inspection || inspection.deletedAt) {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
 
-    return InspectionMapper.toResponseDto(inspection);
+    const dto = InspectionMapper.toResponseDto(inspection);
+    dto.statusName = await this.resolveStatusName(dto.statusId);
+    return dto;
   }
 
   async update(
@@ -249,7 +279,9 @@ export class InspectionService {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
 
-    return InspectionMapper.toResponseDto(updated);
+    const updateDto = InspectionMapper.toResponseDto(updated);
+    updateDto.statusName = await this.resolveStatusName(updateDto.statusId);
+    return updateDto;
   }
 
   async updateChecklistId(
@@ -275,5 +307,33 @@ export class InspectionService {
     }
 
     return { deleted };
+  }
+
+  async updateInspectionStatus(
+    id: string,
+    dto: UpdateInspectionStatusDto,
+  ): Promise<{ success: boolean }> {
+    const current = await this.inspectionRepository.findById(id);
+    if (!current || current.deletedAt) {
+      throw new NotFoundException(`Inspection with id "${id}" not found`);
+    }
+
+    const status = await this.statusRepository.findById(dto.statusId);
+    if (!status || !status.isActive) {
+      throw new BadRequestException(`Status with id "${dto.statusId}" not found or inactive`);
+    }
+
+    await this.inspectionRepository.updateById(id, {
+      statusId: dto.statusId,
+    });
+
+    const updated = await this.inspectionRepository.findById(id);
+    if (updated) {
+      const updatedDto = InspectionMapper.toResponseDto(updated);
+      updatedDto.statusName = status.name;
+      this.socketGateway.emitInspectionStatusUpdated(updatedDto as any);
+    }
+
+    return { success: true };
   }
 }
