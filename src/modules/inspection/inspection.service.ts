@@ -10,8 +10,10 @@ import { ListInspectionsQueryDto } from './dto/list-inspections-query.dto';
 import { PaginatedInspectionResponseDto } from './dto/paginated-inspection-response.dto';
 import { UpdateChecklistIdDto } from './dto/update-checklist-id.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
+import { UpdateInspectionStatusDto } from './dto/update-inspection-status.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
+import { StatusRepository } from '../status/repositories/status.repository';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
 import { FormDomainValidationService } from '../rabbitmq/form-domain-validation.service';
 import { nanoid } from 'nanoid';
@@ -116,6 +118,7 @@ export class InspectionService {
   constructor(
     private readonly inspectionRepository: InspectionRepository,
     private readonly formDomainValidation: FormDomainValidationService,
+    private readonly statusRepository: StatusRepository,
   ) {}
 
   private async generateUniqueInspectionNumber(): Promise<string> {
@@ -148,6 +151,10 @@ export class InspectionService {
     const payload = InspectionMapper.toEntity(dto);
     payload.inspection_number =
       (await this.generateUniqueInspectionNumber());
+
+    const [pending] = await this.statusRepository.findAll(false, { code: 'PENDING' });
+    payload.statusId = pending?._id.toString();
+
     const now = new Date();
     payload.date = now;
     payload.inspection_date = now;
@@ -275,5 +282,26 @@ export class InspectionService {
     }
 
     return { deleted };
+  }
+
+  async updateInspectionStatus(
+    id: string,
+    dto: UpdateInspectionStatusDto,
+  ): Promise<{ success: boolean }> {
+    const current = await this.inspectionRepository.findById(id);
+    if (!current || current.deletedAt) {
+      throw new NotFoundException(`Inspection with id "${id}" not found`);
+    }
+
+    const status = await this.statusRepository.findById(dto.statusId);
+    if (!status || !status.isActive) {
+      throw new BadRequestException(`Status with id "${dto.statusId}" not found or inactive`);
+    }
+
+    await this.inspectionRepository.updateById(id, {
+      statusId: dto.statusId,
+    });
+
+    return { success: true };
   }
 }
