@@ -70,8 +70,18 @@ export class InvoiceService {
     }
   };
 
+  private assertNoInvoiceForInspection = async (inspectionId: string): Promise<void> => {
+    const exists = await this.invoiceRepository.existsByInspectionId(inspectionId);
+    if (exists) {
+      throw new BadRequestException(
+        `Ya existe una factura para la inspeccion "${inspectionId}"`,
+      );
+    }
+  };
+
   create = async (dto: CreateInvoiceDto): Promise<InvoiceResponseDto> => {
     await this.assertInspectionExists(dto.inspection_id);
+    await this.assertNoInvoiceForInspection(dto.inspection_id);
 
     const payload = InvoiceMapper.toEntity(dto);
     payload.invoice_number = await this.generateUniqueInvoiceNumber();

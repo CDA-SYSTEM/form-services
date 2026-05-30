@@ -94,4 +94,14 @@ export class InvoiceRepository {
     });
     return total > 0;
   };
+
+  existsByInspectionId = async (
+    inspectionId: string,
+  ): Promise<boolean> => {
+    const total = await this.repository.countDocuments({
+      inspection_id: inspectionId,
+      deletedAt: null,
+    });
+    return total > 0;
+  };
 }
