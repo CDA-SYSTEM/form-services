@@ -40,8 +40,9 @@ export class PriceController {
   @ApiOperation({ summary: 'Crear un precio' })
   @ApiOkResponse({ type: PriceResponseDto })
   @Post()
-  create = (@Body() dto: CreatePriceDto): Promise<PriceResponseDto> =>
-    this.createPriceUseCase.execute(dto);
+  create(@Body() dto: CreatePriceDto): Promise<PriceResponseDto> {
+    return this.createPriceUseCase.execute(dto);
+  }
 
   @ApiOperation({ summary: 'Listar precios con filtros y paginacion' })
   @ApiQuery({ name: 'includeDeleted', required: false, type: String })
@@ -51,31 +52,36 @@ export class PriceController {
   @ApiQuery({ name: 'size', required: false, type: Number })
   @ApiOkResponse({ type: PaginatedPriceResponseDto })
   @Get()
-  findAll = (
+  findAll(
     @Query() query: ListPricesQueryDto,
-  ): Promise<PaginatedPriceResponseDto> =>
-    this.findAllPricesUseCase.execute(query);
+  ): Promise<PaginatedPriceResponseDto> {
+    return this.findAllPricesUseCase.execute(query);
+  }
 
   @ApiOperation({ summary: 'Obtener precio por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: PriceResponseDto })
   @Get(':id')
-  findOne = (@Param('id') id: string): Promise<PriceResponseDto> =>
-    this.findOnePriceUseCase.execute(id);
+  findOne(@Param('id') id: string): Promise<PriceResponseDto> {
+    return this.findOnePriceUseCase.execute(id);
+  }
 
   @ApiOperation({ summary: 'Actualizar precio por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: PriceResponseDto })
   @Patch(':id')
-  update = (
+  update(
     @Param('id') id: string,
     @Body() dto: UpdatePriceDto,
-  ): Promise<PriceResponseDto> => this.updatePriceUseCase.execute(id, dto);
+  ): Promise<PriceResponseDto> {
+    return this.updatePriceUseCase.execute(id, dto);
+  }
 
   @ApiOperation({ summary: 'Eliminar (soft delete) precio por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ schema: { example: { deleted: true } } })
   @Delete(':id')
-  remove = (@Param('id') id: string): Promise<{ deleted: boolean }> =>
-    this.removePriceUseCase.execute(id);
+  remove(@Param('id') id: string): Promise<{ deleted: boolean }> {
+    return this.removePriceUseCase.execute(id);
+  }
 }

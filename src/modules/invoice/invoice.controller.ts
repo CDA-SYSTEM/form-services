@@ -40,8 +40,9 @@ export class InvoiceController {
   @ApiOperation({ summary: 'Crear una factura' })
   @ApiOkResponse({ type: InvoiceResponseDto })
   @Post()
-  create = (@Body() dto: CreateInvoiceDto): Promise<InvoiceResponseDto> =>
-    this.createInvoiceUseCase.execute(dto);
+  create(@Body() dto: CreateInvoiceDto): Promise<InvoiceResponseDto> {
+    return this.createInvoiceUseCase.execute(dto);
+  }
 
   @ApiOperation({
     summary: 'Listar facturas con filtros opcionales y paginacion',
@@ -53,31 +54,36 @@ export class InvoiceController {
   @ApiQuery({ name: 'size', required: false, type: Number })
   @ApiOkResponse({ type: PaginatedInvoiceResponseDto })
   @Get()
-  findAll = (
+  findAll(
     @Query() query: ListInvoicesQueryDto,
-  ): Promise<PaginatedInvoiceResponseDto> =>
-    this.findAllInvoicesUseCase.execute(query);
+  ): Promise<PaginatedInvoiceResponseDto> {
+    return this.findAllInvoicesUseCase.execute(query);
+  }
 
   @ApiOperation({ summary: 'Obtener factura por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: InvoiceResponseDto })
   @Get(':id')
-  findOne = (@Param('id') id: string): Promise<InvoiceResponseDto> =>
-    this.findOneInvoiceUseCase.execute(id);
+  findOne(@Param('id') id: string): Promise<InvoiceResponseDto> {
+    return this.findOneInvoiceUseCase.execute(id);
+  }
 
   @ApiOperation({ summary: 'Actualizar factura por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: InvoiceResponseDto })
   @Patch(':id')
-  update = (
+  update(
     @Param('id') id: string,
     @Body() dto: UpdateInvoiceDto,
-  ): Promise<InvoiceResponseDto> => this.updateInvoiceUseCase.execute(id, dto);
+  ): Promise<InvoiceResponseDto> {
+    return this.updateInvoiceUseCase.execute(id, dto);
+  }
 
   @ApiOperation({ summary: 'Eliminar (soft delete) factura por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ schema: { example: { deleted: true } } })
   @Delete(':id')
-  remove = (@Param('id') id: string): Promise<{ deleted: boolean }> =>
-    this.removeInvoiceUseCase.execute(id);
+  remove(@Param('id') id: string): Promise<{ deleted: boolean }> {
+    return this.removeInvoiceUseCase.execute(id);
+  }
 }

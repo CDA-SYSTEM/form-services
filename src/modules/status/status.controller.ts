@@ -40,8 +40,9 @@ export class StatusController {
   @ApiOperation({ summary: 'Crear un estado' })
   @ApiOkResponse({ type: StatusResponseDto })
   @Post()
-  create = (@Body() dto: CreateStatusDto): Promise<StatusResponseDto> =>
-    this.createStatusUseCase.execute(dto);
+  create(@Body() dto: CreateStatusDto): Promise<StatusResponseDto> {
+    return this.createStatusUseCase.execute(dto);
+  }
 
   @ApiOperation({ summary: 'Listar estados con filtros y paginacion' })
   @ApiQuery({ name: 'includeDeleted', required: false, type: String })
@@ -50,31 +51,36 @@ export class StatusController {
   @ApiQuery({ name: 'size', required: false, type: Number })
   @ApiOkResponse({ type: PaginatedStatusResponseDto })
   @Get()
-  findAll = (
+  findAll(
     @Query() query: ListStatusesQueryDto,
-  ): Promise<PaginatedStatusResponseDto> =>
-    this.findAllStatusesUseCase.execute(query);
+  ): Promise<PaginatedStatusResponseDto> {
+    return this.findAllStatusesUseCase.execute(query);
+  }
 
   @ApiOperation({ summary: 'Obtener estado por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: StatusResponseDto })
   @Get(':id')
-  findOne = (@Param('id') id: string): Promise<StatusResponseDto> =>
-    this.findOneStatusUseCase.execute(id);
+  findOne(@Param('id') id: string): Promise<StatusResponseDto> {
+    return this.findOneStatusUseCase.execute(id);
+  }
 
   @ApiOperation({ summary: 'Actualizar estado por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ type: StatusResponseDto })
   @Patch(':id')
-  update = (
+  update(
     @Param('id') id: string,
     @Body() dto: UpdateStatusDto,
-  ): Promise<StatusResponseDto> => this.updateStatusUseCase.execute(id, dto);
+  ): Promise<StatusResponseDto> {
+    return this.updateStatusUseCase.execute(id, dto);
+  }
 
   @ApiOperation({ summary: 'Eliminar (soft delete) estado por id' })
   @ApiParam({ name: 'id', type: String })
   @ApiOkResponse({ schema: { example: { deleted: true } } })
   @Delete(':id')
-  remove = (@Param('id') id: string): Promise<{ deleted: boolean }> =>
-    this.removeStatusUseCase.execute(id);
+  remove(@Param('id') id: string): Promise<{ deleted: boolean }> {
+    return this.removeStatusUseCase.execute(id);
+  }
 }
