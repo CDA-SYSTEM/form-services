@@ -12,6 +12,7 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceMapper } from './mappers/invoice.mapper';
 import { InvoiceRepository } from './repositories/invoice.repository';
 import { InspectionRepository } from '../inspection/repositories/inspection.repository';
+import { InspectionService } from '../inspection/inspection.service';
 import { SocketGateway } from '../socket/socket.gateway';
 import { nanoid } from 'nanoid';
 
@@ -20,6 +21,7 @@ export class InvoiceService {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly inspectionRepository: InspectionRepository,
+    private readonly inspectionService: InspectionService,
     private readonly socketGateway: SocketGateway,
   ) {}
 
@@ -142,6 +144,12 @@ export class InvoiceService {
 
     if (dto.inspection_id) {
       await this.assertInspectionExists(dto.inspection_id);
+    }
+
+    if (dto.statusId) {
+      await this.inspectionService.updateInspectionStatus(current.inspection_id, {
+        statusId: dto.statusId,
+      });
     }
 
     const partialPayload: any = {
