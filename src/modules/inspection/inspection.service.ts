@@ -14,6 +14,7 @@ import { UpdateInspectionStatusDto } from './dto/update-inspection-status.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
 import { StatusRepository } from '../status/repositories/status.repository';
+import { SocketGateway } from '../socket/socket.gateway';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
 import { FormDomainValidationService } from '../rabbitmq/form-domain-validation.service';
 import { nanoid } from 'nanoid';
@@ -119,6 +120,7 @@ export class InspectionService {
     private readonly inspectionRepository: InspectionRepository,
     private readonly formDomainValidation: FormDomainValidationService,
     private readonly statusRepository: StatusRepository,
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   private async generateUniqueInspectionNumber(): Promise<string> {
@@ -324,6 +326,13 @@ export class InspectionService {
     await this.inspectionRepository.updateById(id, {
       statusId: dto.statusId,
     });
+
+    const updated = await this.inspectionRepository.findById(id);
+    if (updated) {
+      const updatedDto = InspectionMapper.toResponseDto(updated);
+      updatedDto.statusName = status.name;
+      this.socketGateway.emitInspectionStatusUpdated(updatedDto as any);
+    }
 
     return { success: true };
   }
