@@ -47,6 +47,9 @@ lerna-debug.log*
 .temp
 .tmp
 
+# internal docs (no trackeado por git)
+/inter-docs
+
 # Runtime data
 pids
 *.pid
