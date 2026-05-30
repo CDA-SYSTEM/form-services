@@ -12,6 +12,7 @@ import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoiceMapper } from './mappers/invoice.mapper';
 import { InvoiceRepository } from './repositories/invoice.repository';
 import { InspectionRepository } from '../inspection/repositories/inspection.repository';
+import { SocketGateway } from '../socket/socket.gateway';
 import { nanoid } from 'nanoid';
 
 @Injectable()
@@ -19,6 +20,7 @@ export class InvoiceService {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly inspectionRepository: InspectionRepository,
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   private buildInvoiceNumber = (): string => {
@@ -87,7 +89,9 @@ export class InvoiceService {
     payload.total = totals.total;
 
     const created = await this.invoiceRepository.create(payload);
-    return InvoiceMapper.toResponseDto(created);
+    const responseDto = InvoiceMapper.toResponseDto(created);
+    this.socketGateway.emitInvoiceCreated(responseDto as any);
+    return responseDto;
   };
 
   findAll = async (
