@@ -56,7 +56,7 @@ export class InvoiceService {
         .reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
         .toFixed(2),
     );
-    const tax = Number((subtotal * 0.19).toFixed(2));
+    const tax = Number((subtotal * 0).toFixed(2));
     const total = Number((subtotal + tax).toFixed(2));
     return { subtotal, tax, total };
   };
