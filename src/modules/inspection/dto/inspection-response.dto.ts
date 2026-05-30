@@ -88,6 +88,9 @@ export class InspectionResponseDto {
   statusId?: string;
 
   @ApiPropertyOptional()
+  statusName?: string;
+
+  @ApiPropertyOptional()
   checklistId?: string;
   @ApiProperty({ type: ChecklistResponseDto })
   checklist: ChecklistResponseDto;

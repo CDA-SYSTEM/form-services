@@ -172,7 +172,9 @@ export class InspectionService {
     }));
 
     const created = await this.inspectionRepository.create(payload);
-    return InspectionMapper.toResponseDto(created);
+    const createDto = InspectionMapper.toResponseDto(created);
+    createDto.statusName = await this.resolveStatusName(createDto.statusId);
+    return createDto;
   }
 
   async findAll(
@@ -196,6 +198,15 @@ export class InspectionService {
 
     const data = result.data.map(InspectionMapper.toResponseDto);
 
+    const statusIds = [...new Set(data.map(d => d.statusId).filter(Boolean))];
+    if (statusIds.length > 0) {
+      const statuses = await this.statusRepository.findAll(false, {});
+      const statusMap = new Map(statuses.data.map(s => [s._id.toString(), s.name]));
+      for (const dto of data) {
+        if (dto.statusId) dto.statusName = statusMap.get(dto.statusId) ?? '';
+      }
+    }
+
     return new PaginatedInspectionResponseDto({
       data,
       total: result.total,
@@ -204,13 +215,22 @@ export class InspectionService {
     });
   }
 
+  private async resolveStatusName(statusId?: string): Promise<string | undefined> {
+    if (!statusId) return undefined;
+    const statuses = await this.statusRepository.findAll(false, {});
+    const status = statuses.data.find(s => s._id.toString() === statusId);
+    return status?.name;
+  }
+
   async findOne(id: string): Promise<InspectionResponseDto> {
     const inspection = await this.inspectionRepository.findById(id);
     if (!inspection || inspection.deletedAt) {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
 
-    return InspectionMapper.toResponseDto(inspection);
+    const dto = InspectionMapper.toResponseDto(inspection);
+    dto.statusName = await this.resolveStatusName(dto.statusId);
+    return dto;
   }
 
   async update(
@@ -257,7 +277,9 @@ export class InspectionService {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
 
-    return InspectionMapper.toResponseDto(updated);
+    const updateDto = InspectionMapper.toResponseDto(updated);
+    updateDto.statusName = await this.resolveStatusName(updateDto.statusId);
+    return updateDto;
   }
 
   async updateChecklistId(
