@@ -49,6 +49,9 @@ export class InvoiceResponseDto {
   @ApiProperty()
   statusId: string;
 
+  @ApiPropertyOptional()
+  statusName?: string;
+
   @ApiProperty()
   inspection_id: string;
 

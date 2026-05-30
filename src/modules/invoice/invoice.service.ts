@@ -14,16 +14,29 @@ import { InvoiceRepository } from './repositories/invoice.repository';
 import { InspectionRepository } from '../inspection/repositories/inspection.repository';
 import { InspectionService } from '../inspection/inspection.service';
 import { SocketGateway } from '../socket/socket.gateway';
+import { StatusRepository } from '../status/repositories/status.repository';
 import { nanoid } from 'nanoid';
 
 @Injectable()
 export class InvoiceService {
+  private statusCache: Map<string, string> | null = null;
+
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly inspectionRepository: InspectionRepository,
     private readonly inspectionService: InspectionService,
     private readonly socketGateway: SocketGateway,
+    private readonly statusRepository: StatusRepository,
   ) {}
+
+  private resolveStatusName = async (statusId?: string): Promise<string | undefined> => {
+    if (!statusId) return undefined;
+    if (!this.statusCache) {
+      const statuses = await this.statusRepository.findAll(false, {});
+      this.statusCache = new Map(statuses.data.map((s) => [s._id.toString(), s.name]));
+    }
+    return this.statusCache.get(statusId);
+  };
 
   private buildInvoiceNumber = (): string => {
     const now = new Date();
@@ -126,7 +139,14 @@ export class InvoiceService {
       pagination,
     );
 
-    const data = result.data.map(InvoiceMapper.toResponseDto);
+    this.statusCache = null;
+    const data = await Promise.all(
+      result.data.map(async (entity) => {
+        const dto = InvoiceMapper.toResponseDto(entity);
+        dto.statusName = await this.resolveStatusName(dto.statusId);
+        return dto;
+      }),
+    );
 
     return new PaginatedInvoiceResponseDto({
       data,
@@ -141,7 +161,9 @@ export class InvoiceService {
     if (!invoice || invoice.deletedAt) {
       throw new NotFoundException(`Invoice with id "${id}" not found`);
     }
-    return InvoiceMapper.toResponseDto(invoice);
+    const dto = InvoiceMapper.toResponseDto(invoice);
+    dto.statusName = await this.resolveStatusName(dto.statusId);
+    return dto;
   };
 
   update = async (
