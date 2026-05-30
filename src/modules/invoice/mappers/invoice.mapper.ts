@@ -1,10 +1,14 @@
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
 import { InvoiceResponseDto } from '../dto/invoice-response.dto';
-import { Invoice } from '../../../shared/entities/invoice.entity';
+import { Invoice, InvoiceItem } from '../../../shared/entities/invoice.entity';
 
 export class InvoiceMapper {
   static toEntity = (dto: CreateInvoiceDto): Partial<Invoice> => ({
-    ...dto,
+    client: dto.client,
+    items: dto.items as InvoiceItem[],
+    statusId: dto.statusId,
+    inspection_id: dto.inspection_id,
+    observations: dto.observations,
     deletedAt: null,
   });
 
