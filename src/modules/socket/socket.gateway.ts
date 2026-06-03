@@ -45,6 +45,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('invoice.created', payload);
   }
 
+  emitInvoiceUpdated(payload: Record<string, unknown>): void {
+    this.server.emit('invoice.updated', payload);
+  }
+
   emitInspectionStatusUpdated(payload: Record<string, unknown>): void {
     this.server.emit('inspection.status.updated', payload);
   }

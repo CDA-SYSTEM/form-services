@@ -209,7 +209,9 @@ export class InvoiceService {
       throw new NotFoundException(`Invoice with id "${id}" not found`);
     }
 
-    return InvoiceMapper.toResponseDto(updated);
+    const updatedDto = InvoiceMapper.toResponseDto(updated);
+    this.socketGateway.emitInvoiceUpdated(updatedDto as any);
+    return updatedDto;
   };
 
   remove = async (id: string): Promise<{ deleted: boolean }> => {
