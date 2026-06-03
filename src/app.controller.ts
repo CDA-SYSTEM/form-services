@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+const startTime = Date.now();
+
 @ApiTags('health')
 @Controller()
 export class AppController {
@@ -10,14 +12,16 @@ export class AppController {
       example: {
         status: 'ok',
         service: 'form-service',
+        uptime: 12345,
       },
     },
   })
   @Get()
-  healthCheck(): { status: string; service: string } {
+  healthCheck(): { status: string; service: string; uptime: number } {
     return {
       status: 'ok',
       service: 'form-service',
+      uptime: Math.floor((Date.now() - startTime) / 1000),
     };
   }
 }

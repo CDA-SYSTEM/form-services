@@ -25,6 +25,7 @@ import { FindAllInvoicesUseCase } from './use-cases/find-all-invoices.use-case';
 import { FindOneInvoiceUseCase } from './use-cases/find-one-invoice.use-case';
 import { UpdateInvoiceUseCase } from './use-cases/update-invoice.use-case';
 import { RemoveInvoiceUseCase } from './use-cases/remove-invoice.use-case';
+import { GetInvoiceStatsUseCase } from './use-cases/get-invoice-stats.use-case';
 
 @ApiTags('invoices')
 @Controller('invoices')
@@ -35,6 +36,7 @@ export class InvoiceController {
     private readonly findOneInvoiceUseCase: FindOneInvoiceUseCase,
     private readonly updateInvoiceUseCase: UpdateInvoiceUseCase,
     private readonly removeInvoiceUseCase: RemoveInvoiceUseCase,
+    private readonly getInvoiceStatsUseCase: GetInvoiceStatsUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Crear una factura' })
@@ -58,6 +60,12 @@ export class InvoiceController {
     @Query() query: ListInvoicesQueryDto,
   ): Promise<PaginatedInvoiceResponseDto> {
     return this.findAllInvoicesUseCase.execute(query);
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Estadísticas de facturas para admin' })
+  async getStats() {
+    return this.getInvoiceStatsUseCase.execute();
   }
 
   @ApiOperation({ summary: 'Obtener factura por id' })

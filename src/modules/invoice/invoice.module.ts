@@ -11,6 +11,7 @@ import { FindAllInvoicesUseCase } from './use-cases/find-all-invoices.use-case';
 import { FindOneInvoiceUseCase } from './use-cases/find-one-invoice.use-case';
 import { UpdateInvoiceUseCase } from './use-cases/update-invoice.use-case';
 import { RemoveInvoiceUseCase } from './use-cases/remove-invoice.use-case';
+import { GetInvoiceStatsUseCase } from './use-cases/get-invoice-stats.use-case';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Invoice]), InspectionModule, StatusModule],
@@ -22,6 +23,7 @@ import { RemoveInvoiceUseCase } from './use-cases/remove-invoice.use-case';
     FindAllInvoicesUseCase,
     FindOneInvoiceUseCase,
     UpdateInvoiceUseCase,
+    GetInvoiceStatsUseCase,
     RemoveInvoiceUseCase,
   ],
   exports: [InvoiceService, InvoiceRepository],

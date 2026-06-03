@@ -12,6 +12,7 @@ import { RemoveInspectionUseCase } from './use-cases/remove-inspection.use-case'
 import { UpdateChecklistIdUseCase } from './use-cases/update-checklist-id.use-case';
 import { UpdateInspectionUseCase } from './use-cases/update-inspection.use-case';
 import { UpdateInspectionStatusUseCase } from './use-cases/update-inspection-status.use-case';
+import { GetInspectionStatsUseCase } from './use-cases/get-inspection-stats.use-case';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Inspection]), StatusModule],
@@ -25,6 +26,7 @@ import { UpdateInspectionStatusUseCase } from './use-cases/update-inspection-sta
     UpdateInspectionUseCase,
     UpdateChecklistIdUseCase,
     UpdateInspectionStatusUseCase,
+    GetInspectionStatsUseCase,
     RemoveInspectionUseCase,
   ],
   exports: [InspectionService, InspectionRepository],

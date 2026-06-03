@@ -29,6 +29,7 @@ import { RemoveInspectionUseCase } from './use-cases/remove-inspection.use-case'
 import { UpdateChecklistIdUseCase } from './use-cases/update-checklist-id.use-case';
 import { UpdateInspectionUseCase } from './use-cases/update-inspection.use-case';
 import { UpdateInspectionStatusUseCase } from './use-cases/update-inspection-status.use-case';
+import { GetInspectionStatsUseCase } from './use-cases/get-inspection-stats.use-case';
 
 @ApiTags('inspections')
 @Controller('inspections')
@@ -41,6 +42,7 @@ export class InspectionController {
     private readonly removeInspectionUseCase: RemoveInspectionUseCase,
     private readonly updateChecklistIdUseCase: UpdateChecklistIdUseCase,
     private readonly updateInspectionStatusUseCase: UpdateInspectionStatusUseCase,
+    private readonly getInspectionStatsUseCase: GetInspectionStatsUseCase,
   ) {}
 
   @ApiOperation({
@@ -78,6 +80,12 @@ export class InspectionController {
     @Query() query: ListInspectionsQueryDto,
   ): Promise<PaginatedInspectionResponseDto> {
     return this.findAllInspectionsUseCase.execute(query);
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Estadísticas de inspecciones para admin' })
+  async getStats() {
+    return this.getInspectionStatsUseCase.execute();
   }
 
   @ApiOperation({ summary: 'Obtener inspeccion por id' })
