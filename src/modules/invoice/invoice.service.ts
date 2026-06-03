@@ -135,6 +135,7 @@ export class InvoiceService {
         invoice_number: filters.invoice_number?.trim(),
         statusId: filters.statusId?.trim(),
         inspection_id: filters.inspection_id?.trim(),
+        search: filters.search?.trim(),
       },
       pagination,
     );

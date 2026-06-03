@@ -19,6 +19,11 @@ export class ListInvoicesQueryDto {
   @IsString()
   invoice_number?: string;
 
+  @ApiPropertyOptional({ description: 'Busqueda parcial por numero de factura, nombre o documento del cliente' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
   @ApiPropertyOptional({ description: 'Filtrar por ID de estado' })
   @IsOptional()
   @IsString()

@@ -8,6 +8,7 @@ type InvoiceFilters = {
   invoice_number?: string;
   statusId?: string;
   inspection_id?: string;
+  search?: string;
 };
 
 @Injectable()
@@ -32,7 +33,15 @@ export class InvoiceRepository {
     if (!includeDeleted) {
       baseWhere.deletedAt = null;
     }
-    if (filters?.invoice_number) {
+    if (filters?.search) {
+      const escaped = filters.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex: Record<string, string> = { $regex: escaped, $options: 'i' };
+      baseWhere.$or = [
+        { invoice_number: regex },
+        { 'client.name': regex },
+        { 'client.document': regex },
+      ] as unknown[];
+    } else if (filters?.invoice_number) {
       baseWhere.invoice_number = filters.invoice_number;
     }
     if (filters?.statusId) {
