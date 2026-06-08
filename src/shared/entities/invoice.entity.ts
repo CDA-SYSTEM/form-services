@@ -64,6 +64,9 @@ export class Invoice {
   @Column({ nullable: true })
   observations?: string;
 
+  @Column({ nullable: true })
+  urlInvoice?: string;
+
   @Column()
   createdAt: Date;
 

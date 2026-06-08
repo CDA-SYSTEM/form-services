@@ -26,5 +26,6 @@ export class InvoiceMapper {
     createdAt: entity.createdAt?.toISOString() ?? '',
     updatedAt: entity.updatedAt?.toISOString() ?? '',
     deletedAt: entity.deletedAt ? entity.deletedAt.toISOString() : null,
+    urlInvoice: entity.urlInvoice,
   });
 }

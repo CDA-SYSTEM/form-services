@@ -66,4 +66,7 @@ export class InvoiceResponseDto {
 
   @ApiPropertyOptional()
   deletedAt?: string | null;
+
+  @ApiPropertyOptional()
+  urlInvoice?: string;
 }
