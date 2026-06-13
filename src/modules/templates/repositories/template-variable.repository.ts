@@ -25,6 +25,16 @@ export class TemplateVariableRepository {
     return (document as TemplateVariable) ?? null;
   }
 
+  async upsertByTag(tag: string, data: Partial<TemplateVariable>): Promise<TemplateVariable> {
+    await this.repository.updateOne(
+      { tag } as any,
+      { $set: data },
+      { upsert: true },
+    );
+    const cursor = this.repository.createCursor({ tag } as any);
+    return (await cursor.next()) as TemplateVariable;
+  }
+
   async findAll(category?: string): Promise<TemplateVariable[]> {
     const filter: any = {};
     if (category) {

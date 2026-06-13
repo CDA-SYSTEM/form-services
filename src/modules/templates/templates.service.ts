@@ -82,6 +82,10 @@ export class TemplatesService {
     return this.variableRepository.create(data);
   }
 
+  async upsertVariableByTag(tag: string, data: any) {
+    return this.variableRepository.upsertByTag(tag, data);
+  }
+
   private mapToDto(entity: any): TemplateResponseDto {
     return {
       id: entity._id.toString(),
