@@ -4,7 +4,6 @@ import { TemplatesService } from './templates.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { TemplateResponseDto } from './dto/template-response.dto';
-import { TemplateType } from '../../shared/entities/invoice-template.entity';
 
 @ApiTags('invoice-templates')
 @Controller('invoice-templates')

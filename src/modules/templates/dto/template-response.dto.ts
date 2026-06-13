@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TemplateType } from '../../../shared/entities/invoice-template.entity';
 
 export class TemplateResponseDto {
   @ApiProperty()

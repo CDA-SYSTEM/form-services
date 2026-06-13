@@ -1,13 +1,40 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../../app.module';
 import { TemplatesService } from '../../modules/templates/templates.service';
-import { TemplateType } from '../../shared/entities/invoice-template.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const templatesService = app.get(TemplatesService);
 
-  const current = await templatesService.findAll(TemplateType.INVOICE);
+  // 1. Seed Types
+  const types = await templatesService.findAllTypes();
+  if (types.length === 0) {
+    await templatesService.createType({ code: 'INVOICE', name: 'Factura de Venta' });
+    console.log('Seeded template types');
+  }
+
+  // 2. Seed Variables
+  const variables = await templatesService.findAllVariables();
+  if (variables.length === 0) {
+    const vars = [
+      { tag: 'invoice.number', name: 'Número de Factura', category: 'INVOICE', description: 'El identificador único de la factura' },
+      { tag: 'invoice.total', name: 'Total Factura', category: 'INVOICE', description: 'Valor total a pagar' },
+      { tag: 'client.name', name: 'Nombre Cliente', category: 'CLIENT', description: 'Nombre completo o razón social' },
+      { tag: 'client.document', name: 'Documento Cliente', category: 'CLIENT', description: 'NIT o Cédula' },
+      { tag: 'vehicle.plate', name: 'Placa Vehículo', category: 'VEHICLE', description: 'Placa del vehículo inspeccionado' },
+      { tag: 'date.full', name: 'Fecha Completa', category: 'DATE', description: 'Fecha y hora en formato largo' },
+      { tag: 'date.day', name: 'Día', category: 'DATE', description: 'Día del mes (01-31)' },
+      { tag: 'date.month', name: 'Mes', category: 'DATE', description: 'Mes del año (01-12)' },
+      { tag: 'date.year', name: 'Año', category: 'DATE', description: 'Año en 4 dígitos' },
+    ];
+    for (const v of vars) {
+      await templatesService.createVariable(v);
+    }
+    console.log('Seeded template variables');
+  }
+
+  // 3. Seed Default Template
+  const current = await templatesService.findAll('INVOICE');
   if (current.length > 0) {
     console.log('Templates already seeded');
     await app.close();

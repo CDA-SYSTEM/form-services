@@ -1,6 +1,5 @@
-import { IsEnum, IsNotEmpty, IsString, IsBoolean, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TemplateType } from '../../../shared/entities/invoice-template.entity';
 
 export class CreateTemplateDto {
   @ApiProperty({ example: 'Factura Estándar' })
