@@ -10,6 +10,7 @@ import { PriceModule } from './modules/price/price.module';
 import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { StatusModule } from './modules/status/status.module';
+import { TemplatesModule } from './modules/templates/templates.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { StatusModule } from './modules/status/status.module';
     PriceModule,
     InvoiceModule,
     SocketModule,
+    TemplatesModule,
   ],
   controllers: [AppController],
   providers: [],
