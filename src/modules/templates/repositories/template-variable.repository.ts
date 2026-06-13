@@ -26,7 +26,7 @@ export class TemplateVariableRepository {
   }
 
   async findAll(category?: string): Promise<TemplateVariable[]> {
-    const filter: any = { isActive: true };
+    const filter: any = {};
     if (category) {
       filter.category = category;
     }

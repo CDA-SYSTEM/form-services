@@ -33,7 +33,7 @@ export class TemplateTypeRepository {
   }
 
   async findAll(): Promise<TemplateType[]> {
-    const cursor = this.repository.createCursor({ isActive: true });
+    const cursor = this.repository.createCursor({});
     return (await cursor.toArray()) as TemplateType[];
   }
 }
