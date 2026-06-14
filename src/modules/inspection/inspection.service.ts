@@ -86,7 +86,9 @@ export class InspectionService {
   };
   private readonly validateChecklistByVehicleType = (
     vehicleType: VehicleType | undefined,
-    checklist: CreateInspectionDto['checklist'] | UpdateInspectionDto['checklist'],
+    checklist:
+      | CreateInspectionDto['checklist']
+      | UpdateInspectionDto['checklist'],
   ): void => {
     if (!vehicleType || !checklist) {
       return;
@@ -154,10 +156,11 @@ export class InspectionService {
     );
 
     const payload = InspectionMapper.toEntity(dto);
-    payload.inspection_number =
-      (await this.generateUniqueInspectionNumber());
+    payload.inspection_number = await this.generateUniqueInspectionNumber();
 
-    const pendingResult = await this.statusRepository.findAll(false, { code: 'PENDING' });
+    const pendingResult = await this.statusRepository.findAll(false, {
+      code: 'PENDING',
+    });
     const pending = pendingResult.data[0];
     payload.statusId = pending?._id.toString();
 
@@ -203,10 +206,12 @@ export class InspectionService {
 
     const data = result.data.map(InspectionMapper.toResponseDto);
 
-    const statusIds = [...new Set(data.map(d => d.statusId).filter(Boolean))];
+    const statusIds = [...new Set(data.map((d) => d.statusId).filter(Boolean))];
     if (statusIds.length > 0) {
       const statuses = await this.statusRepository.findAll(false, {});
-      const statusMap = new Map(statuses.data.map(s => [s._id.toString(), s.name]));
+      const statusMap = new Map(
+        statuses.data.map((s) => [s._id.toString(), s.name]),
+      );
       for (const dto of data) {
         if (dto.statusId) dto.statusName = statusMap.get(dto.statusId) ?? '';
       }
@@ -220,10 +225,12 @@ export class InspectionService {
     });
   }
 
-  private async resolveStatusName(statusId?: string): Promise<string | undefined> {
+  private async resolveStatusName(
+    statusId?: string,
+  ): Promise<string | undefined> {
     if (!statusId) return undefined;
     const statuses = await this.statusRepository.findAll(false, {});
-    const status = statuses.data.find(s => s._id.toString() === statusId);
+    const status = statuses.data.find((s) => s._id.toString() === statusId);
     return status?.name;
   }
 
@@ -247,10 +254,12 @@ export class InspectionService {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
 
-    this.validateTiresForVehicleType(
-      dto.vehicle_type ?? current.vehicle_type,
-      dto.tires?.length ?? current.tires?.length ?? 0,
-    );
+    if (dto.tires !== undefined) {
+      this.validateTiresForVehicleType(
+        dto.vehicle_type ?? current.vehicle_type,
+        dto.tires.length,
+      );
+    }
     this.validateChecklistByVehicleType(
       dto.vehicle_type ?? current.vehicle_type,
       dto.checklist ?? current.checklist,
@@ -258,12 +267,8 @@ export class InspectionService {
 
     const partialPayload = {
       ...dto,
-      client_id: dto.client_id
-        ? dto.client_id.trim()
-        : undefined,
-      operator_id: dto.operator_id
-        ? dto.operator_id.trim()
-        : undefined,
+      client_id: dto.client_id ? dto.client_id.trim() : undefined,
+      operator_id: dto.operator_id ? dto.operator_id.trim() : undefined,
       responsible_id: dto.responsible_id
         ? dto.responsible_id.trim()
         : undefined,
@@ -277,7 +282,10 @@ export class InspectionService {
       })),
     };
 
-    const updated = await this.inspectionRepository.updateById(id, partialPayload);
+    const updated = await this.inspectionRepository.updateById(
+      id,
+      partialPayload,
+    );
     if (!updated || updated.deletedAt) {
       throw new NotFoundException(`Inspection with id "${id}" not found`);
     }
@@ -323,7 +331,9 @@ export class InspectionService {
 
     const status = await this.statusRepository.findById(dto.statusId);
     if (!status || !status.isActive) {
-      throw new BadRequestException(`Status with id "${dto.statusId}" not found or inactive`);
+      throw new BadRequestException(
+        `Status with id "${dto.statusId}" not found or inactive`,
+      );
     }
 
     await this.inspectionRepository.updateById(id, {
