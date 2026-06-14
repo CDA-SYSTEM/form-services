@@ -70,6 +70,9 @@ export class InspectionService {
     };
 
     const rule = rules[vehicleType];
+    if (!rule) {
+      return;
+    }
     if (rule.exact && tiresCount !== rule.exact) {
       throw new BadRequestException(
         `Para ${rule.label} se requieren exactamente ${rule.exact} llantas`,
