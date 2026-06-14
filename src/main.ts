@@ -20,7 +20,8 @@ async function bootstrap() {
     basicAuth({
       challenge: true,
       users: {
-        [process.env.DOCS_USER ?? 'admin']: process.env.DOCS_PASSWORD ?? 'admin123',
+        [process.env.DOCS_USER ?? 'admin']:
+          process.env.DOCS_PASSWORD ?? 'admin123',
       },
     }),
   );
@@ -43,6 +44,8 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 7500);
   console.log(`Form service is running on port ${process.env.PORT ?? 7500}`);
-  console.log(`docs available at http://localhost:${process.env.PORT ?? 7500}/docs`);
+  console.log(
+    `docs available at http://localhost:${process.env.PORT ?? 7500}/docs`,
+  );
 }
 bootstrap();

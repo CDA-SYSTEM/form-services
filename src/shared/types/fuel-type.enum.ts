@@ -4,4 +4,3 @@ export enum FuelType {
   GAS = 'GAS',
   GAS_GASOLINA = 'GAS_GASOLINA',
 }
-

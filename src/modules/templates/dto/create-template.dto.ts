@@ -12,7 +12,9 @@ export class CreateTemplateDto {
   @IsNotEmpty()
   typeCode: string;
 
-  @ApiProperty({ example: '<html><body><h1>Factura {{invoice.number}}</h1></body></html>' })
+  @ApiProperty({
+    example: '<html><body><h1>Factura {{invoice.number}}</h1></body></html>',
+  })
   @IsString()
   @IsNotEmpty()
   body: string;

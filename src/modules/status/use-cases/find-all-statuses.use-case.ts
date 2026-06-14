@@ -9,6 +9,5 @@ export class FindAllStatusesUseCase {
 
   execute = (
     query: ListStatusesQueryDto,
-  ): Promise<PaginatedStatusResponseDto> =>
-    this.statusService.findAll(query);
+  ): Promise<PaginatedStatusResponseDto> => this.statusService.findAll(query);
 }

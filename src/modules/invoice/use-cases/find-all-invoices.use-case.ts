@@ -9,6 +9,5 @@ export class FindAllInvoicesUseCase {
 
   execute = (
     query: ListInvoicesQueryDto,
-  ): Promise<PaginatedInvoiceResponseDto> =>
-    this.invoiceService.findAll(query);
+  ): Promise<PaginatedInvoiceResponseDto> => this.invoiceService.findAll(query);
 }

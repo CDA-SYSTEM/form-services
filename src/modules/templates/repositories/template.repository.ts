@@ -41,7 +41,10 @@ export class TemplateRepository {
     return (document as InvoiceTemplate) ?? null;
   }
 
-  async updateById(id: string, data: Partial<InvoiceTemplate>): Promise<InvoiceTemplate | null> {
+  async updateById(
+    id: string,
+    data: Partial<InvoiceTemplate>,
+  ): Promise<InvoiceTemplate | null> {
     if (!ObjectId.isValid(id)) return null;
     await this.repository.updateOne(
       { _id: new ObjectId(id) },

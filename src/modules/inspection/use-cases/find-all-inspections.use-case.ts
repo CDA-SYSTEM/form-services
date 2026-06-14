@@ -7,7 +7,9 @@ import { InspectionService } from '../inspection.service';
 export class FindAllInspectionsUseCase {
   constructor(private readonly inspectionService: InspectionService) {}
 
-  execute(query: ListInspectionsQueryDto): Promise<PaginatedInspectionResponseDto> {
+  execute(
+    query: ListInspectionsQueryDto,
+  ): Promise<PaginatedInspectionResponseDto> {
     return this.inspectionService.findAll(query);
   }
 }

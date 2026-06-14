@@ -7,7 +7,10 @@ import { InspectionService } from '../inspection.service';
 export class UpdateInspectionUseCase {
   constructor(private readonly inspectionService: InspectionService) {}
 
-  execute(id: string, dto: UpdateInspectionDto): Promise<InspectionResponseDto> {
+  execute(
+    id: string,
+    dto: UpdateInspectionDto,
+  ): Promise<InspectionResponseDto> {
     return this.inspectionService.update(id, dto);
   }
 }

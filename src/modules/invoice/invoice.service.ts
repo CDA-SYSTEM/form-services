@@ -29,11 +29,15 @@ export class InvoiceService {
     private readonly statusRepository: StatusRepository,
   ) {}
 
-  private resolveStatusName = async (statusId?: string): Promise<string | undefined> => {
+  private resolveStatusName = async (
+    statusId?: string,
+  ): Promise<string | undefined> => {
     if (!statusId) return undefined;
     if (!this.statusCache) {
       const statuses = await this.statusRepository.findAll(false, {});
-      this.statusCache = new Map(statuses.data.map((s) => [s._id.toString(), s.name]));
+      this.statusCache = new Map(
+        statuses.data.map((s) => [s._id.toString(), s.name]),
+      );
     }
     return this.statusCache.get(statusId);
   };
@@ -77,14 +81,15 @@ export class InvoiceService {
   private assertInspectionExists = async (id: string): Promise<void> => {
     const inspection = await this.inspectionRepository.findById(id);
     if (!inspection || inspection.deletedAt) {
-      throw new BadRequestException(
-        `La inspeccion con id "${id}" no existe`,
-      );
+      throw new BadRequestException(`La inspeccion con id "${id}" no existe`);
     }
   };
 
-  private assertNoInvoiceForInspection = async (inspectionId: string): Promise<void> => {
-    const exists = await this.invoiceRepository.existsByInspectionId(inspectionId);
+  private assertNoInvoiceForInspection = async (
+    inspectionId: string,
+  ): Promise<void> => {
+    const exists =
+      await this.invoiceRepository.existsByInspectionId(inspectionId);
     if (exists) {
       throw new BadRequestException(
         `Ya existe una factura para la inspeccion "${inspectionId}"`,
@@ -181,9 +186,12 @@ export class InvoiceService {
     }
 
     if (dto.statusId) {
-      await this.inspectionService.updateInspectionStatus(current.inspection_id, {
-        statusId: dto.statusId,
-      });
+      await this.inspectionService.updateInspectionStatus(
+        current.inspection_id,
+        {
+          statusId: dto.statusId,
+        },
+      );
     }
 
     const partialPayload: any = {
@@ -202,10 +210,7 @@ export class InvoiceService {
       partialPayload.total = totals.total;
     }
 
-    const updated = await this.invoiceRepository.updateById(
-      id,
-      partialPayload,
-    );
+    const updated = await this.invoiceRepository.updateById(id, partialPayload);
     if (!updated || updated.deletedAt) {
       throw new NotFoundException(`Invoice with id "${id}" not found`);
     }

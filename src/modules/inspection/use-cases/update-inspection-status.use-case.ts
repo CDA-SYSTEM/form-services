@@ -6,7 +6,10 @@ import { InspectionService } from '../inspection.service';
 export class UpdateInspectionStatusUseCase {
   constructor(private readonly inspectionService: InspectionService) {}
 
-  execute(id: string, dto: UpdateInspectionStatusDto): Promise<{ success: boolean }> {
+  execute(
+    id: string,
+    dto: UpdateInspectionStatusDto,
+  ): Promise<{ success: boolean }> {
     return this.inspectionService.updateInspectionStatus(id, dto);
   }
 }

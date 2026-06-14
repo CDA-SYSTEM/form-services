@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TemplatesService } from './templates.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
@@ -41,12 +50,17 @@ export class TemplatesController {
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar una plantilla' })
   @ApiResponse({ status: 200, type: TemplateResponseDto })
-  update(@Param('id') id: string, @Body() updateTemplateDto: UpdateTemplateDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTemplateDto: UpdateTemplateDto,
+  ) {
     return this.templatesService.update(id, updateTemplateDto);
   }
 
   @Patch(':id/activate')
-  @ApiOperation({ summary: 'Activar una plantilla (desactiva las demás del mismo tipo)' })
+  @ApiOperation({
+    summary: 'Activar una plantilla (desactiva las demás del mismo tipo)',
+  })
   @ApiResponse({ status: 200, type: TemplateResponseDto })
   activate(@Param('id') id: string) {
     return this.templatesService.activate(id);

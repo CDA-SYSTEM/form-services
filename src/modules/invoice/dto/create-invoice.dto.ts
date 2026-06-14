@@ -39,7 +39,10 @@ export class InvoiceClientDto {
 }
 
 export class InvoiceItemDto {
-  @ApiProperty({ example: 'Revision tecnico-mecanica', description: 'Concepto' })
+  @ApiProperty({
+    example: 'Revision tecnico-mecanica',
+    description: 'Concepto',
+  })
   @IsString()
   @IsNotEmpty()
   concept: string;

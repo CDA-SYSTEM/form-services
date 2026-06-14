@@ -25,7 +25,10 @@ export class TemplateVariableRepository {
     return (document as TemplateVariable) ?? null;
   }
 
-  async upsertByTag(tag: string, data: Partial<TemplateVariable>): Promise<TemplateVariable> {
+  async upsertByTag(
+    tag: string,
+    data: Partial<TemplateVariable>,
+  ): Promise<TemplateVariable> {
     await this.repository.updateOne(
       { tag } as any,
       { $set: data },

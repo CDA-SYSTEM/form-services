@@ -28,7 +28,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       '';
 
     if (!this.expectedApiKey || clientApiKey !== this.expectedApiKey) {
-      console.log(`[Socket] Conexión rechazada — API key inválida desde ${client.id}`);
+      console.log(
+        `[Socket] Conexión rechazada — API key inválida desde ${client.id}`,
+      );
       client.emit('error', { message: 'API key inválida' });
       client.disconnect(true);
       return;

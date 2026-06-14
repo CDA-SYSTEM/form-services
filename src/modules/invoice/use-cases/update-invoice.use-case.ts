@@ -7,9 +7,6 @@ import { InvoiceService } from '../invoice.service';
 export class UpdateInvoiceUseCase {
   constructor(private readonly invoiceService: InvoiceService) {}
 
-  execute = (
-    id: string,
-    dto: UpdateInvoiceDto,
-  ): Promise<InvoiceResponseDto> =>
+  execute = (id: string, dto: UpdateInvoiceDto): Promise<InvoiceResponseDto> =>
     this.invoiceService.update(id, dto);
 }

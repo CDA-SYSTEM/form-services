@@ -14,7 +14,11 @@ import { RemoveInvoiceUseCase } from './use-cases/remove-invoice.use-case';
 import { GetInvoiceStatsUseCase } from './use-cases/get-invoice-stats.use-case';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Invoice]), InspectionModule, StatusModule],
+  imports: [
+    TypeOrmModule.forFeature([Invoice]),
+    InspectionModule,
+    StatusModule,
+  ],
   controllers: [InvoiceController],
   providers: [
     InvoiceService,

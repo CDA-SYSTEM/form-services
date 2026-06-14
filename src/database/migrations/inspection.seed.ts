@@ -52,7 +52,11 @@ async function bootstrap() {
     ],
     tires: [
       { position: TirePosition.FRONT_LEFT, code: 'AA001', tire_pressure: 32.0 },
-      { position: TirePosition.FRONT_RIGHT, code: 'AA002', tire_pressure: 32.3 },
+      {
+        position: TirePosition.FRONT_RIGHT,
+        code: 'AA002',
+        tire_pressure: 32.3,
+      },
       { position: TirePosition.REAR_LEFT, code: 'AA003', tire_pressure: 30.8 },
       { position: TirePosition.REAR_RIGHT, code: 'AA004', tire_pressure: 30.6 },
     ],

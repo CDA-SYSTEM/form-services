@@ -6,7 +6,10 @@ import { InspectionService } from '../inspection.service';
 export class UpdateChecklistIdUseCase {
   constructor(private readonly inspectionService: InspectionService) {}
 
-  execute(id: string, dto: UpdateChecklistIdDto): Promise<{ success: boolean }> {
+  execute(
+    id: string,
+    dto: UpdateChecklistIdDto,
+  ): Promise<{ success: boolean }> {
     return this.inspectionService.updateChecklistId(id, dto);
   }
 }

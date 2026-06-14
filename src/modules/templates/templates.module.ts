@@ -10,9 +10,16 @@ import { TemplateType } from '../../shared/entities/template-type.entity';
 import { TemplateVariable } from '../../shared/entities/template-variable.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InvoiceTemplate, TemplateType, TemplateVariable])],
+  imports: [
+    TypeOrmModule.forFeature([InvoiceTemplate, TemplateType, TemplateVariable]),
+  ],
   controllers: [TemplatesController],
-  providers: [TemplatesService, TemplateRepository, TemplateTypeRepository, TemplateVariableRepository],
+  providers: [
+    TemplatesService,
+    TemplateRepository,
+    TemplateTypeRepository,
+    TemplateVariableRepository,
+  ],
   exports: [TemplatesService],
 })
 export class TemplatesModule {}

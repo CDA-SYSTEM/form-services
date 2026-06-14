@@ -99,18 +99,14 @@ export class InvoiceRepository {
     return true;
   };
 
-  existsByInvoiceNumber = async (
-    invoiceNumber: string,
-  ): Promise<boolean> => {
+  existsByInvoiceNumber = async (invoiceNumber: string): Promise<boolean> => {
     const total = await this.repository.countDocuments({
       invoice_number: invoiceNumber,
     });
     return total > 0;
   };
 
-  existsByInspectionId = async (
-    inspectionId: string,
-  ): Promise<boolean> => {
+  existsByInspectionId = async (inspectionId: string): Promise<boolean> => {
     const total = await this.repository.countDocuments({
       inspection_id: inspectionId,
       deletedAt: null,

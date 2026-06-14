@@ -26,9 +26,7 @@ export class TemplateTypeRepository {
   }
 
   async findByCode(code: string): Promise<TemplateType | null> {
-    const document = await this.repository
-      .createCursor({ code } as any)
-      .next();
+    const document = await this.repository.createCursor({ code } as any).next();
     return (document as TemplateType) ?? null;
   }
 

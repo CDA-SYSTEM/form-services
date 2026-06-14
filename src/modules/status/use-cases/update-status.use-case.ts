@@ -7,9 +7,6 @@ import { StatusService } from '../status.service';
 export class UpdateStatusUseCase {
   constructor(private readonly statusService: StatusService) {}
 
-  execute = (
-    id: string,
-    dto: UpdateStatusDto,
-  ): Promise<StatusResponseDto> =>
+  execute = (id: string, dto: UpdateStatusDto): Promise<StatusResponseDto> =>
     this.statusService.update(id, dto);
 }

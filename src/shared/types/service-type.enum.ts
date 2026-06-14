@@ -6,4 +6,3 @@ export enum ServiceType {
   DIPLOMATICO = 'DIPLOMATICO',
   TEMPORAL = 'TEMPORAL',
 }
-

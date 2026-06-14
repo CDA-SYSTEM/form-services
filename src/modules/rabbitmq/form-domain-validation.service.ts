@@ -6,7 +6,11 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { RMQ_PATTERNS } from '../../shared/constants/rmq-patterns';
 
@@ -142,10 +146,34 @@ export class FormDomainValidationService implements OnModuleDestroy {
     );
 
     type RpcOutcome =
-      | { service: 'cliente'; queue: string; pattern: string; ok: true; response: ExistsResponse }
-      | { service: 'cliente'; queue: string; pattern: string; ok: false; error: string }
-      | { service: 'vehiculo'; queue: string; pattern: string; ok: true; response: ExistsResponse }
-      | { service: 'vehiculo'; queue: string; pattern: string; ok: false; error: string };
+      | {
+          service: 'cliente';
+          queue: string;
+          pattern: string;
+          ok: true;
+          response: ExistsResponse;
+        }
+      | {
+          service: 'cliente';
+          queue: string;
+          pattern: string;
+          ok: false;
+          error: string;
+        }
+      | {
+          service: 'vehiculo';
+          queue: string;
+          pattern: string;
+          ok: true;
+          response: ExistsResponse;
+        }
+      | {
+          service: 'vehiculo';
+          queue: string;
+          pattern: string;
+          ok: false;
+          error: string;
+        };
 
     const runRpc = async (
       proxy: ClientProxy,
@@ -206,12 +234,12 @@ export class FormDomainValidationService implements OnModuleDestroy {
     const rpcFailures = [clientOutcome, vehicleOutcome].filter((o) => !o.ok);
     if (rpcFailures.length > 0) {
       const detalle = rpcFailures
-        .map((o) => (o.ok === false ? `${o.service}(${o.queue}): ${o.error}` : ''))
+        .map((o) =>
+          o.ok === false ? `${o.service}(${o.queue}): ${o.error}` : '',
+        )
         .filter(Boolean)
         .join(' | ');
-      this.logger.error(
-        `[RMQ] Validacion abortada por error RPC: ${detalle}`,
-      );
+      this.logger.error(`[RMQ] Validacion abortada por error RPC: ${detalle}`);
       throw new ServiceUnavailableException(
         `No se pudo validar con microservicios (RabbitMQ). Fallo: ${detalle}`,
       );

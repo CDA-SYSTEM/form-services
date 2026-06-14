@@ -14,7 +14,10 @@ export class CreateStatusDto {
   @IsNotEmpty()
   code: string;
 
-  @ApiProperty({ example: 'Pendiente', description: 'Nombre visible del estado' })
+  @ApiProperty({
+    example: 'Pendiente',
+    description: 'Nombre visible del estado',
+  })
   @IsString()
   @IsNotEmpty()
   name: string;

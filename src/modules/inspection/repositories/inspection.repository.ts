@@ -100,9 +100,11 @@ export class InspectionRepository {
       return null;
     }
 
-    const document = await this.repository.createCursor({
-      _id: new ObjectId(id),
-    } as any).next();
+    const document = await this.repository
+      .createCursor({
+        _id: new ObjectId(id),
+      } as any)
+      .next();
 
     if (!document) {
       return null;

@@ -9,33 +9,143 @@ async function bootstrap() {
   // 1. Seed Types
   const types = await templatesService.findAllTypes();
   if (types.length === 0) {
-    await templatesService.createType({ code: 'INVOICE', name: 'Factura de Venta' });
+    await templatesService.createType({
+      code: 'INVOICE',
+      name: 'Factura de Venta',
+    });
     console.log('Seeded template types');
   }
 
   // 2. Seed Variables (upsert)
   const varsToSeed = [
-    { tag: 'invoice.number', name: 'Número de Factura', category: 'INVOICE', description: 'El identificador único de la factura' },
-    { tag: 'invoice.total', name: 'Total Factura', category: 'INVOICE', description: 'Valor total a pagar' },
-    { tag: 'invoice.subtotal', name: 'Subtotal', category: 'INVOICE', description: 'Subtotal antes de impuestos' },
-    { tag: 'invoice.tax', name: 'IVA / Impuesto', category: 'INVOICE', description: 'Valor del impuesto' },
-    { tag: 'invoice.id', name: 'ID Interno Factura', category: 'INVOICE', description: 'Identificador UUID de la factura' },
-    { tag: 'invoice.observations', name: 'Observaciones', category: 'INVOICE', description: 'Notas u observaciones de la factura' },
-    { tag: 'invoice.item_description', name: 'Concepto (descripción ítem)', category: 'INVOICE', description: 'Descripción de cada concepto (usar dentro de #each invoice.items)' },
-    { tag: 'invoice.item_quantity', name: 'Cantidad (ítem)', category: 'INVOICE', description: 'Cantidad del concepto (usar dentro de #each invoice.items)' },
-    { tag: 'invoice.item_unitPrice', name: 'Precio Unitario (ítem)', category: 'INVOICE', description: 'Precio unitario del concepto (usar dentro de #each invoice.items)' },
-    { tag: 'invoice.item_total', name: 'Total (ítem)', category: 'INVOICE', description: 'Total del concepto (usar dentro de #each invoice.items)' },
-    { tag: 'client.name', name: 'Nombre Cliente', category: 'CLIENT', description: 'Nombre completo o razón social' },
-    { tag: 'client.document', name: 'Documento Cliente', category: 'CLIENT', description: 'NIT o Cédula' },
-    { tag: 'vehicle.plate', name: 'Placa Vehículo', category: 'VEHICLE', description: 'Placa del vehículo inspeccionado' },
-    { tag: 'vehicle.brand', name: 'Marca Vehículo', category: 'VEHICLE', description: 'Marca del vehículo' },
-    { tag: 'vehicle.model', name: 'Modelo Vehículo', category: 'VEHICLE', description: 'Modelo del vehículo' },
-    { tag: 'vehicle.line', name: 'Línea Vehículo', category: 'VEHICLE', description: 'Línea del vehículo' },
-    { tag: 'vehicle.color', name: 'Color Vehículo', category: 'VEHICLE', description: 'Color del vehículo' },
-    { tag: 'date.full', name: 'Fecha Completa', category: 'DATE', description: 'Fecha y hora en formato largo' },
-    { tag: 'date.day', name: 'Día', category: 'DATE', description: 'Día del mes (01-31)' },
-    { tag: 'date.month', name: 'Mes', category: 'DATE', description: 'Mes del año (01-12)' },
-    { tag: 'date.year', name: 'Año', category: 'DATE', description: 'Año en 4 dígitos' },
+    {
+      tag: 'invoice.number',
+      name: 'Número de Factura',
+      category: 'INVOICE',
+      description: 'El identificador único de la factura',
+    },
+    {
+      tag: 'invoice.total',
+      name: 'Total Factura',
+      category: 'INVOICE',
+      description: 'Valor total a pagar',
+    },
+    {
+      tag: 'invoice.subtotal',
+      name: 'Subtotal',
+      category: 'INVOICE',
+      description: 'Subtotal antes de impuestos',
+    },
+    {
+      tag: 'invoice.tax',
+      name: 'IVA / Impuesto',
+      category: 'INVOICE',
+      description: 'Valor del impuesto',
+    },
+    {
+      tag: 'invoice.id',
+      name: 'ID Interno Factura',
+      category: 'INVOICE',
+      description: 'Identificador UUID de la factura',
+    },
+    {
+      tag: 'invoice.observations',
+      name: 'Observaciones',
+      category: 'INVOICE',
+      description: 'Notas u observaciones de la factura',
+    },
+    {
+      tag: 'invoice.item_description',
+      name: 'Concepto (descripción ítem)',
+      category: 'INVOICE',
+      description:
+        'Descripción de cada concepto (usar dentro de #each invoice.items)',
+    },
+    {
+      tag: 'invoice.item_quantity',
+      name: 'Cantidad (ítem)',
+      category: 'INVOICE',
+      description: 'Cantidad del concepto (usar dentro de #each invoice.items)',
+    },
+    {
+      tag: 'invoice.item_unitPrice',
+      name: 'Precio Unitario (ítem)',
+      category: 'INVOICE',
+      description:
+        'Precio unitario del concepto (usar dentro de #each invoice.items)',
+    },
+    {
+      tag: 'invoice.item_total',
+      name: 'Total (ítem)',
+      category: 'INVOICE',
+      description: 'Total del concepto (usar dentro de #each invoice.items)',
+    },
+    {
+      tag: 'client.name',
+      name: 'Nombre Cliente',
+      category: 'CLIENT',
+      description: 'Nombre completo o razón social',
+    },
+    {
+      tag: 'client.document',
+      name: 'Documento Cliente',
+      category: 'CLIENT',
+      description: 'NIT o Cédula',
+    },
+    {
+      tag: 'vehicle.plate',
+      name: 'Placa Vehículo',
+      category: 'VEHICLE',
+      description: 'Placa del vehículo inspeccionado',
+    },
+    {
+      tag: 'vehicle.brand',
+      name: 'Marca Vehículo',
+      category: 'VEHICLE',
+      description: 'Marca del vehículo',
+    },
+    {
+      tag: 'vehicle.model',
+      name: 'Modelo Vehículo',
+      category: 'VEHICLE',
+      description: 'Modelo del vehículo',
+    },
+    {
+      tag: 'vehicle.line',
+      name: 'Línea Vehículo',
+      category: 'VEHICLE',
+      description: 'Línea del vehículo',
+    },
+    {
+      tag: 'vehicle.color',
+      name: 'Color Vehículo',
+      category: 'VEHICLE',
+      description: 'Color del vehículo',
+    },
+    {
+      tag: 'date.full',
+      name: 'Fecha Completa',
+      category: 'DATE',
+      description: 'Fecha y hora en formato largo',
+    },
+    {
+      tag: 'date.day',
+      name: 'Día',
+      category: 'DATE',
+      description: 'Día del mes (01-31)',
+    },
+    {
+      tag: 'date.month',
+      name: 'Mes',
+      category: 'DATE',
+      description: 'Mes del año (01-12)',
+    },
+    {
+      tag: 'date.year',
+      name: 'Año',
+      category: 'DATE',
+      description: 'Año en 4 dígitos',
+    },
   ];
   for (const v of varsToSeed) {
     await templatesService.upsertVariableByTag(v.tag, v);
