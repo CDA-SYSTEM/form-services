@@ -14,12 +14,13 @@ import { InvoiceRepository } from './repositories/invoice.repository';
 import { InspectionRepository } from '../inspection/repositories/inspection.repository';
 import { InspectionService } from '../inspection/inspection.service';
 import { SocketGateway } from '../socket/socket.gateway';
+import { StatusInfoResponseDto } from '../status/dto/status-info-response.dto';
 import { StatusRepository } from '../status/repositories/status.repository';
 import { nanoid } from 'nanoid';
 
 @Injectable()
 export class InvoiceService {
-  private statusCache: Map<string, string> | null = null;
+  private statusCache: Map<string, StatusInfoResponseDto> | null = null;
 
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
@@ -29,14 +30,14 @@ export class InvoiceService {
     private readonly statusRepository: StatusRepository,
   ) {}
 
-  private resolveStatusName = async (
+  private resolveStatus = async (
     statusId?: string,
-  ): Promise<string | undefined> => {
+  ): Promise<StatusInfoResponseDto | undefined> => {
     if (!statusId) return undefined;
     if (!this.statusCache) {
       const statuses = await this.statusRepository.findAll(false, {});
       this.statusCache = new Map(
-        statuses.data.map((s) => [s._id.toString(), s.name]),
+        statuses.data.map((s) => [s._id.toString(), StatusInfoResponseDto.fromEntity(s)]),
       );
     }
     return this.statusCache.get(statusId);
@@ -120,6 +121,7 @@ export class InvoiceService {
 
     const created = await this.invoiceRepository.create(payload);
     const responseDto = InvoiceMapper.toResponseDto(created);
+    responseDto.status = await this.resolveStatus(created.statusId);
     this.socketGateway.emitInvoiceCreated(responseDto as any);
     return responseDto;
   };
@@ -149,7 +151,7 @@ export class InvoiceService {
     const data = await Promise.all(
       result.data.map(async (entity) => {
         const dto = InvoiceMapper.toResponseDto(entity);
-        dto.statusName = await this.resolveStatusName(dto.statusId);
+        dto.status = await this.resolveStatus(entity.statusId);
         return dto;
       }),
     );
@@ -168,7 +170,7 @@ export class InvoiceService {
       throw new NotFoundException(`Invoice with id "${id}" not found`);
     }
     const dto = InvoiceMapper.toResponseDto(invoice);
-    dto.statusName = await this.resolveStatusName(dto.statusId);
+    dto.status = await this.resolveStatus(invoice.statusId);
     return dto;
   };
 

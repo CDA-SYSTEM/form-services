@@ -20,7 +20,6 @@ export class InvoiceMapper {
     subtotal: entity.subtotal,
     tax: entity.tax,
     total: entity.total,
-    statusId: entity.statusId,
     inspection_id: entity.inspection_id,
     observations: entity.observations,
     createdAt: entity.createdAt?.toISOString() ?? '',

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { StatusInfoResponseDto } from '../../status/dto/status-info-response.dto';
 
 export class InvoiceClientResponseDto {
   @ApiProperty()
@@ -46,11 +47,8 @@ export class InvoiceResponseDto {
   @ApiProperty()
   total: number;
 
-  @ApiProperty()
-  statusId: string;
-
-  @ApiPropertyOptional()
-  statusName?: string;
+  @ApiPropertyOptional({ type: StatusInfoResponseDto })
+  status?: StatusInfoResponseDto;
 
   @ApiProperty()
   inspection_id: string;

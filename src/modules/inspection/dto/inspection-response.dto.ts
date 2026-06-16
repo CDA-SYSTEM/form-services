@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { StatusInfoResponseDto } from '../../status/dto/status-info-response.dto';
 import { BrakeFluidSightGlass } from '../../../shared/types/brake-fluid-sight-glass.enum';
 import { CustomerType } from '../../../shared/types/customer-type.enum';
 import { FuelType } from '../../../shared/types/fuel-type.enum';
@@ -84,11 +85,8 @@ export class InspectionResponseDto {
   signature_url?: string;
   @ApiProperty()
   photo_reception_url: string;
-  @ApiPropertyOptional()
-  statusId?: string;
-
-  @ApiPropertyOptional()
-  statusName?: string;
+  @ApiPropertyOptional({ type: StatusInfoResponseDto })
+  status?: StatusInfoResponseDto;
 
   @ApiPropertyOptional()
   checklistId?: string;

@@ -13,6 +13,7 @@ import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { UpdateInspectionStatusDto } from './dto/update-inspection-status.dto';
 import { InspectionMapper } from './mappers/inspection.mapper';
 import { InspectionRepository } from './repositories/inspection.repository';
+import { StatusInfoResponseDto } from '../status/dto/status-info-response.dto';
 import { StatusRepository } from '../status/repositories/status.repository';
 import { SocketGateway } from '../socket/socket.gateway';
 import { VehicleType } from '../../shared/types/vehicle-type.enum';
@@ -181,7 +182,7 @@ export class InspectionService {
 
     const created = await this.inspectionRepository.create(payload);
     const createDto = InspectionMapper.toResponseDto(created);
-    createDto.statusName = await this.resolveStatusName(createDto.statusId);
+    createDto.status = await this.resolveStatus(created.statusId);
     return createDto;
   }
 
@@ -204,18 +205,24 @@ export class InspectionService {
       pagination,
     );
 
-    const data = result.data.map(InspectionMapper.toResponseDto);
-
-    const statusIds = [...new Set(data.map((d) => d.statusId).filter(Boolean))];
+    const statusIds = [
+      ...new Set(result.data.map((e) => e.statusId).filter(Boolean)),
+    ];
+    let statusMap = new Map<string, StatusInfoResponseDto>();
     if (statusIds.length > 0) {
       const statuses = await this.statusRepository.findAll(false, {});
-      const statusMap = new Map(
-        statuses.data.map((s) => [s._id.toString(), s.name]),
+      statusMap = new Map(
+        statuses.data.map((s) => [
+          s._id.toString(),
+          StatusInfoResponseDto.fromEntity(s),
+        ]),
       );
-      for (const dto of data) {
-        if (dto.statusId) dto.statusName = statusMap.get(dto.statusId) ?? '';
-      }
     }
+    const data = result.data.map((entity) => {
+      const dto = InspectionMapper.toResponseDto(entity);
+      if (entity.statusId) dto.status = statusMap.get(entity.statusId);
+      return dto;
+    });
 
     return new PaginatedInspectionResponseDto({
       data,
@@ -225,13 +232,13 @@ export class InspectionService {
     });
   }
 
-  private async resolveStatusName(
+  private async resolveStatus(
     statusId?: string,
-  ): Promise<string | undefined> {
+  ): Promise<StatusInfoResponseDto | undefined> {
     if (!statusId) return undefined;
     const statuses = await this.statusRepository.findAll(false, {});
     const status = statuses.data.find((s) => s._id.toString() === statusId);
-    return status?.name;
+    return status ? StatusInfoResponseDto.fromEntity(status) : undefined;
   }
 
   async findOne(id: string): Promise<InspectionResponseDto> {
@@ -241,7 +248,7 @@ export class InspectionService {
     }
 
     const dto = InspectionMapper.toResponseDto(inspection);
-    dto.statusName = await this.resolveStatusName(dto.statusId);
+    dto.status = await this.resolveStatus(inspection.statusId);
     return dto;
   }
 
@@ -291,7 +298,7 @@ export class InspectionService {
     }
 
     const updateDto = InspectionMapper.toResponseDto(updated);
-    updateDto.statusName = await this.resolveStatusName(updateDto.statusId);
+    updateDto.status = await this.resolveStatus(updated.statusId);
     return updateDto;
   }
 
@@ -343,7 +350,7 @@ export class InspectionService {
     const updated = await this.inspectionRepository.findById(id);
     if (updated) {
       const updatedDto = InspectionMapper.toResponseDto(updated);
-      updatedDto.statusName = status.name;
+      updatedDto.status = StatusInfoResponseDto.fromEntity(status);
       this.socketGateway.emitInspectionStatusUpdated(updatedDto as any);
     }
 

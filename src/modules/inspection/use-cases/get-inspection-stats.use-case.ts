@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
+import { StatusRepository } from '../../status/repositories/status.repository';
+import { StatusInfoResponseDto } from '../../status/dto/status-info-response.dto';
 import { Inspection } from '../../../shared/entities/inspection.entity';
+
+export interface ByStatusEntry {
+  status: StatusInfoResponseDto | null;
+  count: number;
+}
 
 @Injectable()
 export class GetInspectionStatsUseCase {
   constructor(
     @InjectRepository(Inspection)
     private readonly inspectionRepository: MongoRepository<Inspection>,
+    private readonly statusRepository: StatusRepository,
   ) {}
 
   async execute() {
@@ -15,15 +23,30 @@ export class GetInspectionStatsUseCase {
       where: { deletedAt: null },
     });
 
+    const statuses = await this.statusRepository.findAll(false, {});
+    const statusMap = new Map(
+      statuses.data.map((s) => [
+        s._id.toString(),
+        StatusInfoResponseDto.fromEntity(s),
+      ]),
+    );
+
     const totalCount = allInspections.length;
 
-    const byStatus = allInspections.reduce(
+    const countByStatusId = allInspections.reduce(
       (acc, i) => {
         const key = i.statusId?.toString() || 'unknown';
         acc[key] = (acc[key] || 0) + 1;
         return acc;
       },
       {} as Record<string, number>,
+    );
+
+    const byStatus: ByStatusEntry[] = Object.entries(countByStatusId).map(
+      ([id, count]) => ({
+        status: statusMap.get(id) ?? null,
+        count,
+      }),
     );
 
     const byVehicleType = allInspections.reduce(

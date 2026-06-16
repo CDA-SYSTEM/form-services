@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
+import { StatusRepository } from '../../status/repositories/status.repository';
+import { StatusInfoResponseDto } from '../../status/dto/status-info-response.dto';
 import { Invoice } from '../../../shared/entities/invoice.entity';
+
+export interface ByStatusEntry {
+  status: StatusInfoResponseDto | null;
+  count: number;
+}
 
 @Injectable()
 export class GetInvoiceStatsUseCase {
   constructor(
     @InjectRepository(Invoice)
     private readonly invoiceRepository: MongoRepository<Invoice>,
+    private readonly statusRepository: StatusRepository,
   ) {}
 
   async execute() {
@@ -15,19 +23,34 @@ export class GetInvoiceStatsUseCase {
       where: { deletedAt: null },
     });
 
+    const statuses = await this.statusRepository.findAll(false, {});
+    const statusMap = new Map(
+      statuses.data.map((s) => [
+        s._id.toString(),
+        StatusInfoResponseDto.fromEntity(s),
+      ]),
+    );
+
     const totalCount = allInvoices.length;
     const totalRevenue = allInvoices.reduce(
       (sum, inv) => sum + (inv.total || 0),
       0,
     );
 
-    const byStatus = allInvoices.reduce(
+    const countByStatusId = allInvoices.reduce(
       (acc, inv) => {
         const key = inv.statusId?.toString() || 'unknown';
         acc[key] = (acc[key] || 0) + 1;
         return acc;
       },
       {} as Record<string, number>,
+    );
+
+    const byStatus: ByStatusEntry[] = Object.entries(countByStatusId).map(
+      ([id, count]) => ({
+        status: statusMap.get(id) ?? null,
+        count,
+      }),
     );
 
     const revenueByMonth = allInvoices.reduce(

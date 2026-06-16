@@ -39,7 +39,6 @@ export class InspectionMapper {
       observations: entity.observations,
       signature_url: entity.signature_url,
       photo_reception_url: entity.photo_reception_url,
-      statusId: entity.statusId,
       checklistId: entity.checklistId,
       checklist: entity.checklist,
       axles: entity.axles,
