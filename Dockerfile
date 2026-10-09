@@ -11,7 +11,8 @@ COPY . .
 
 RUN npm run build
 
-FROM node:25.6.0-slim
+#FROM node:25.6.0-slim
+FROM public.ecr.aws/docker/library/node:25.6.0-slim
 
 WORKDIR /app
 
